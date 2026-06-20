@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  password      String
+  role          String         @default("user")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Team {
+  id             String    @id @default(cuid())
+  name           String
+  shortName      String
+  slug           String    @unique
+  logo           String
+  city           String
+  founded        Int
+  manager        String
+  stadium        String
+  primaryColor   String
+  secondaryColor String
+  description    String
+  players        Player[]
+  homeFixtures   Fixture[] @relation("HomeTeam")
+  awayFixtures   Fixture[] @relation("AwayTeam")
+  standing       Standing?
+}
+
+model Player {
+  id              String   @id @default(cuid())
+  name            String
+  teamId          String
+  team            Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  position        String   // 'GK' | 'DEF' | 'MID' | 'FWD'
+  number          Int
+  nationality     String
+  nationalityFlag String   @default("🇮🇳")
+  age             Int
+  photo           String
+  goals           Int      @default(0)
+  assists         Int      @default(0)
+  matches         Int      @default(0)
+  yellowCards     Int      @default(0)
+  redCards        Int      @default(0)
+  cleanSheets     Int      @default(0)
+  rating          Float    @default(6.0)
+}
+
+model Fixture {
+  id         String   @id @default(cuid())
+  homeTeamId String
+  homeTeam   Team     @relation("HomeTeam", fields: [homeTeamId], references: [id], onDelete: Cascade)
+  awayTeamId String
+  awayTeam   Team     @relation("AwayTeam", fields: [awayTeamId], references: [id], onDelete: Cascade)
+  date       String
+  time       String
+  venue      String
+  matchday   Int
+  status     String   // 'UPCOMING' | 'LIVE' | 'FINISHED'
+  homeScore  Int?
+  awayScore  Int?
+}
+
+model Standing {
+  id             String   @id @default(cuid())
+  position       Int
+  teamId         String   @unique
+  team           Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  played         Int      @default(0)
+  won            Int      @default(0)
+  drawn          Int      @default(0)
+  lost           Int      @default(0)
+  goalsFor       Int      @default(0)
+  goalsAgainst   Int      @default(0)
+  goalDifference Int      @default(0)
+  points         Int      @default(0)
+  form           String   // e.g. "W,D,L"
+  positionChange String   // 'UP' | 'DOWN' | 'SAME'
+}
+
+model NewsArticle {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  excerpt     String
+  content     String
+  category    String   // 'MATCH_REPORT' | 'TRANSFER' | 'INJURY' | 'PREVIEW' | 'FEATURE'
+  author      String
+  coverImage  String
+  publishedAt DateTime @default(now())
+  featured    Boolean  @default(false)
+  tags        String   // comma-separated tags
+}
+
+model GalleryImage {
+  id      String  @id @default(cuid())
+  url     String
+  caption String
+  matchId String?
+  tags    String  // comma-separated tags
+  width   Int     @default(1200)
+  height  Int     @default(800)
+}
+
+model Sponsor {
+  id          String  @id @default(cuid())
+  name        String
+  logo        String
+  url         String
+  tier        String // 'TITLE' | 'GOLD' | 'SILVER'
+  description String?
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  createdAt DateTime @default(now())
+  read      Boolean  @default(false)
+}
