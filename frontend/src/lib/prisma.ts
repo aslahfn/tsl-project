@@ -23,7 +23,17 @@ function createPrismaClient() {
     });
   }
 
-  const pool = new Pool({ connectionString: databaseUrl });
+  const pool = new Pool({
+    connectionString: databaseUrl,
+    ssl: process.env.NODE_ENV === 'production'
+      ? { rejectUnauthorized: false }
+      : databaseUrl.includes('railway') || databaseUrl.includes('rlwy.net')
+        ? { rejectUnauthorized: false }
+        : false,
+    max: 5,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
+  });
   const adapter = new PrismaPg(pool);
   
   return new PrismaClient({
