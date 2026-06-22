@@ -709,6 +709,16 @@ export async function deleteUser(id: string) {
   });
 }
 
+export async function approvePendingAdmin(id: string) {
+  return withErrorHandling(async () => {
+    const user = await prisma.user.update({
+      where: { id },
+      data: { role: 'admin' }
+    });
+    return user;
+  });
+}
+
 const loginAttempts = new Map<string, { count: number; resetTime: number }>();
 const WINDOW_SIZE_MS = 60 * 1000; // 1 minute
 const MAX_ATTEMPTS = 5;
@@ -741,8 +751,16 @@ export async function loginAdminAction(formData: FormData) {
       where: { email: email.toLowerCase() },
     });
 
-    if (!user || user.role !== 'admin') {
+    if (!user) {
       return { success: false, error: 'Invalid email or password.' };
+    }
+
+    if (user.role === 'pending') {
+      return { success: false, error: 'Your admin request is still pending approval.' };
+    }
+
+    if (user.role !== 'admin') {
+      return { success: false, error: 'Access denied.' };
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);

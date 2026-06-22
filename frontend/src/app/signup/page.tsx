@@ -30,6 +30,7 @@ function SignupForm() {
       if (!res.ok) {
         setError(data.error || 'Failed to register.');
       } else {
+        alert(data.message || 'Request sent! Waiting for current admin approval.');
         router.push('/admin/login');
       }
     } catch (err) {
@@ -228,10 +229,19 @@ function SignupForm() {
                 <span>Registering...</span>
               </>
             ) : (
-              <span>Create Admin Account</span>
+              <span>Request Admin Access</span>
             )}
           </button>
         </form>
+
+        <div style={{
+          textAlign: 'center',
+          marginTop: '1.5rem',
+          fontSize: '0.75rem',
+          color: 'rgba(255,215,0,0.8)'
+        }}>
+          * Your request will be sent to the current admin for approval. You will not be able to log in until approved.
+        </div>
 
         <div style={{
           textAlign: 'center',

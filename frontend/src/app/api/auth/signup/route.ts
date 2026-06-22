@@ -29,12 +29,12 @@ export async function POST(req: Request) {
         name,
         email: email.toLowerCase(),
         password: hashedPassword,
-        role: 'admin',
+        role: 'pending',
       },
     });
 
     return NextResponse.json(
-      { message: 'Account created successfully!', userId: user.id },
+      { message: 'Request sent! Waiting for current admin approval.', userId: user.id },
       { status: 201 }
     );
   } catch (err) {
