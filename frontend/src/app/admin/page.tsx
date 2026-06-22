@@ -606,7 +606,7 @@ export default function AdminDashboard() {
     { id: 'sponsors', label: 'Sponsors' },
     { id: 'gallery', label: 'Gallery' },
     { id: 'notifications', label: 'Alerts' },
-    { id: 'users', label: 'Users' }
+    ...(adminSession?.email === 'aslahfarhanma@gmail.com' ? [{ id: 'users' as Tab, label: 'Users' }] : [])
   ];
 
   return (

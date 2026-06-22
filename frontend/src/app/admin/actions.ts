@@ -11,6 +11,19 @@ import { saveBase64Image } from '@/lib/upload';
 import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 
+import { verifyAdminJWT } from '@/lib/jwt';
+
+// Helper for super admin protection
+async function checkSuperAdmin() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('admin_token')?.value;
+  if (!token) throw new Error('Not authenticated');
+  const payload = await verifyAdminJWT(token);
+  if (!payload || payload.email !== 'aslahfarhanma@gmail.com') {
+    throw new Error('Super Admin privileges required for this action.');
+  }
+}
+
 // Helper for unified error handling
 async function withErrorHandling<T>(action: () => Promise<T>) {
   try {
@@ -660,6 +673,7 @@ export async function saveUser(formData: {
   role: string;
 }) {
   return withErrorHandling(async () => {
+  await checkSuperAdmin();
 
   const lowercaseEmail = formData.email.toLowerCase();
 
@@ -700,6 +714,7 @@ export async function saveUser(formData: {
 
 export async function deleteUser(id: string) {
   return withErrorHandling(async () => {
+  await checkSuperAdmin();
 
   const user = await prisma.user.delete({
     where: { id },
@@ -711,6 +726,7 @@ export async function deleteUser(id: string) {
 
 export async function approvePendingAdmin(id: string) {
   return withErrorHandling(async () => {
+    await checkSuperAdmin();
     const user = await prisma.user.update({
       where: { id },
       data: { role: 'admin' }
