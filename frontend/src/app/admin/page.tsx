@@ -1903,7 +1903,12 @@ export default function AdminDashboard() {
                         <div>
                           <div style={{ fontSize: '0.9rem', fontWeight: 700 }}>{u.name}</div>
                           <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>{u.email}</div>
-                          <span style={{ display: 'inline-block', fontSize: '0.65rem', background: u.role === 'admin' ? 'rgba(255,215,0,0.15)' : 'rgba(255,255,255,0.05)', color: u.role === 'admin' ? '#FFD700' : '#aaa', fontWeight: 700, padding: '0.1rem 0.4rem', borderRadius: '4px', textTransform: 'uppercase', marginTop: '0.3rem' }}>{u.role}</span>
+                          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.3rem', alignItems: 'center' }}>
+                            <span style={{ display: 'inline-block', fontSize: '0.65rem', background: u.role === 'admin' ? 'rgba(255,215,0,0.15)' : 'rgba(255,255,255,0.05)', color: u.role === 'admin' ? '#FFD700' : '#aaa', fontWeight: 700, padding: '0.1rem 0.4rem', borderRadius: '4px', textTransform: 'uppercase' }}>{u.role}</span>
+                            {u.password === '' && (
+                              <span style={{ display: 'inline-block', fontSize: '0.65rem', background: 'rgba(66, 133, 244, 0.15)', color: '#4285F4', fontWeight: 700, padding: '0.1rem 0.4rem', borderRadius: '4px', textTransform: 'uppercase' }}>Google Sign-In</span>
+                            )}
+                          </div>
                         </div>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                           <button
