@@ -43,7 +43,7 @@ export default function TeamsPageClient({ teams }: { teams: Team[] }) {
       <div className="container-wide" style={{ marginTop: '3.5rem' }}>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))',
           gap: '2rem',
         }}>
           {teams.map((team: Team, idx: number) => (

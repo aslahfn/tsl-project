@@ -105,10 +105,21 @@ export default function Navbar() {
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 aria-label="Toggle menu"
-                style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'none' }}
+                style={{ 
+                  background: 'rgba(255,255,255,0.05)', 
+                  border: '1px solid rgba(255,255,255,0.1)', 
+                  color: '#fff', 
+                  cursor: 'pointer', 
+                  display: 'none',
+                  padding: '0.4rem',
+                  borderRadius: '8px',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s ease'
+                }}
                 className="show-mobile"
               >
-                <Menu size={24} />
+                <Menu size={26} color="#FFD700" />
               </button>
             </div>
           </div>
@@ -127,10 +138,24 @@ export default function Navbar() {
           >
             <button
               onClick={() => setMenuOpen(false)}
-              style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}
+              style={{ 
+                position: 'absolute', 
+                top: '1.5rem', 
+                right: '1.5rem', 
+                background: 'rgba(255,255,255,0.05)', 
+                border: '1px solid rgba(255,255,255,0.1)', 
+                color: '#fff', 
+                cursor: 'pointer',
+                padding: '0.4rem',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s ease'
+              }}
               aria-label="Close menu"
             >
-              <X size={28} />
+              <X size={26} color="#FFD700" />
             </button>
             {navLinks.map((link, i) => (
               <motion.div

@@ -404,7 +404,7 @@ export default function FixturesPageClient({ fixtures, teams }: { fixtures: Fixt
                         paddingTop: '1rem',
                         borderTop: '1px dashed rgba(255,255,255,0.08)',
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(min(250px, 100%), 1fr))',
                         gap: '1.25rem',
                         fontSize: '0.8rem',
                         color: 'rgba(255,255,255,0.85)'

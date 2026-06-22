@@ -48,7 +48,7 @@ export default function TeamsSection({ teams, standings }: { teams: Team[]; stan
           </Link>
         </motion.div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: '1.25rem' }}>
           {teams.map((team, i) => {
             const standing = standings.find(s => s.teamId === team.id) || team.standing;
             return (

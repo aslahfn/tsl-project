@@ -34,7 +34,7 @@ export default function Footer() {
   return (
     <footer style={{ background: '#030305', borderTop: '1px solid var(--border-gold)', paddingTop: '4rem' }}>
       <div className="container-wide">
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '3rem', paddingBottom: '3rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: '3rem', paddingBottom: '3rem' }}>
           {/* Brand */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>

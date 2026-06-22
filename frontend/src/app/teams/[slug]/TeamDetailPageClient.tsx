@@ -177,7 +177,7 @@ export default function TeamDetailPageClient({ team, players, fixtures }: TeamDe
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3 }}
-              style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2.5rem' }}
+              style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))', gap: '2.5rem' }}
             >
               {/* About Club */}
               <div style={{
@@ -295,7 +295,7 @@ export default function TeamDetailPageClient({ team, players, fixtures }: TeamDe
               transition={{ duration: 0.3 }}
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(220px, 100%), 1fr))',
                 gap: '1.5rem',
               }}
             >

@@ -66,7 +66,7 @@ export default function NewsSection({ articles }: { articles: NewsArticle[] }) {
           </Link>
         </motion.div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))', gap: '1.25rem' }}>
           {/* Featured article */}
           {featured && (
             <motion.div

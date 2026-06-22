@@ -79,7 +79,7 @@ export default function PlayersPageClient({ players, teams }: { players: Player[
         {/* Leaderboards Grid */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))',
           gap: '2rem',
           marginBottom: '4rem',
         }}>
@@ -299,7 +299,7 @@ export default function PlayersPageClient({ players, teams }: { players: Player[
             layout
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(260px, 100%), 1fr))',
               gap: '1.5rem',
             }}
           >

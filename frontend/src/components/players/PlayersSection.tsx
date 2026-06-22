@@ -106,7 +106,7 @@ export default function PlayersSection({ players }: { players: Player[] }) {
           </Link>
         </motion.div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))', gap: '1.5rem' }}>
           {/* Top Scorers */}
           <div className="glass" style={{ padding: '1.75rem', borderRadius: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.5rem' }}>

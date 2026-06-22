@@ -71,6 +71,7 @@ export default function StandingsSection({ standings }: { standings: any[] }) {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           style={{ overflowX: 'auto' }}
+          className="hide-scrollbar"
         >
           <div style={{
             background: 'rgba(255,255,255,0.02)',

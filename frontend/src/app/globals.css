@@ -270,7 +270,7 @@ h1, h2, h3, h4 { line-height: 1.15; }
 /* =============================================
    SECTION STYLES
    ============================================= */
-.section-padding { padding: 7rem 0; }
+.section-padding { padding: clamp(4rem, 10vw, 7rem) 0; }
 
 .section-title {
   font-family: 'Bebas Neue', sans-serif;
@@ -687,7 +687,7 @@ h1, h2, h3, h4 { line-height: 1.15; }
 
 .mobile-nav-link {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 3.5rem;
+  font-size: clamp(2rem, 10vw, 3.5rem);
   letter-spacing: 0.08em;
   color: var(--text-secondary);
   text-decoration: none;
@@ -793,6 +793,14 @@ h1, h2, h3, h4 { line-height: 1.15; }
   height: 1px;
   background: linear-gradient(90deg, var(--gold-bright), transparent);
   border-radius: 1px;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* =============================================

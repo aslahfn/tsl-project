@@ -62,9 +62,11 @@ export default function StandingsPageClient({ standings }: { standings: any[] })
           style={{
             background: 'rgba(255,255,255,0.02)',
             border: '1px solid rgba(255,215,0,0.12)',
-            borderRadius: 16, overflow: 'hidden',
+            borderRadius: 16, overflowX: 'auto',
           }}
+          className="hide-scrollbar"
         >
+          <div style={{ minWidth: '850px' }}>
           {/* Header */}
           <div style={{
             display: 'grid',
@@ -156,6 +158,7 @@ export default function StandingsPageClient({ standings }: { standings: any[] })
               </motion.div>
             );
           })}
+          </div>
         </motion.div>
       </div>
     </div>

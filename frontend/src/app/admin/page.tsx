@@ -659,7 +659,7 @@ export default function AdminDashboard() {
         </AnimatePresence>
 
         {/* Tab Controls Navigation */}
-        <div style={{ display: 'flex', overflowX: 'auto', gap: '0.5rem', marginBottom: '2rem', paddingBottom: '0.5rem' }}>
+        <div style={{ display: 'flex', overflowX: 'auto', gap: '0.5rem', marginBottom: '2rem', paddingBottom: '0.5rem' }} className="hide-scrollbar">
           {tabList.map((tab) => (
             <button
               key={tab.id}
@@ -676,7 +676,8 @@ export default function AdminDashboard() {
                 letterSpacing: '0.05em',
                 cursor: 'pointer',
                 transition: 'all 0.3s',
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                flexShrink: 0
               }}
             >
               {tab.label}
@@ -692,7 +693,7 @@ export default function AdminDashboard() {
             {activeTab === 'overview' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                 {/* Stats Summary Rows */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(140px, 100%), 1fr))', gap: '1rem' }}>
                   {[
                     { label: 'Teams', val: teams.length, icon: '🏆', color: '#FFD700' },
                     { label: 'Players', val: players.length, icon: '⚽', color: '#FFD700' },
@@ -716,7 +717,7 @@ export default function AdminDashboard() {
                     <span>📡</span> Live Match Controller
                   </h2>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))', gap: '2rem' }}>
                     {/* Goal & Score Input Form */}
                     <form onSubmit={handleGoalEvent} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                       <div>
@@ -954,7 +955,7 @@ export default function AdminDashboard() {
 
             {/* TAB: TEAMS MANAGEMENT */}
             {activeTab === 'teams' && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(340px, 100%), 1fr))', gap: '2rem' }}>
                 {/* Team Roster Form */}
                 <div style={globalCardStyle}>
                   <h2 style={{ fontSize: '1.2rem', color: '#FFD700', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1.5rem' }}>
@@ -1084,7 +1085,7 @@ export default function AdminDashboard() {
 
             {/* TAB: PLAYERS MANAGEMENT */}
             {activeTab === 'players' && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(340px, 100%), 1fr))', gap: '2rem' }}>
                 {/* Player Form */}
                 <div style={globalCardStyle}>
                   <h2 style={{ fontSize: '1.2rem', color: '#FFD700', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1.5rem' }}>
@@ -1243,7 +1244,7 @@ export default function AdminDashboard() {
 
             {/* TAB: FIXTURES/MATCHES MANAGEMENT */}
             {activeTab === 'fixtures' && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(340px, 100%), 1fr))', gap: '2rem' }}>
                 {/* Fixture Schedule Form */}
                 <div style={globalCardStyle}>
                   <h2 style={{ fontSize: '1.2rem', color: '#FFD700', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1.5rem' }}>
@@ -1449,7 +1450,7 @@ export default function AdminDashboard() {
 
             {/* TAB: NEWS MANAGEMENT */}
             {activeTab === 'news' && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(340px, 100%), 1fr))', gap: '2rem' }}>
                 {/* News Article Form */}
                 <div style={globalCardStyle}>
                   <h2 style={{ fontSize: '1.2rem', color: '#FFD700', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1.5rem' }}>
@@ -1584,7 +1585,7 @@ export default function AdminDashboard() {
 
             {/* TAB: SPONSORS MANAGEMENT */}
             {activeTab === 'sponsors' && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(340px, 100%), 1fr))', gap: '2rem' }}>
                 <div style={globalCardStyle}>
                   <h2 style={{ fontSize: '1.2rem', color: '#FFD700', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1.5rem' }}>
                     {editSponsorId ? '✍️ Edit Sponsor' : '➕ Add Sponsor'}
@@ -1686,7 +1687,7 @@ export default function AdminDashboard() {
 
             {/* TAB: GALLERY MANAGEMENT */}
             {activeTab === 'gallery' && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(340px, 100%), 1fr))', gap: '2rem' }}>
                 <div style={globalCardStyle}>
                   <h2 style={{ fontSize: '1.2rem', color: '#FFD700', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1.5rem' }}>
                     {editGalleryId ? '✍️ Edit Image' : '🖼️ Add Gallery Photo'}
@@ -1739,7 +1740,7 @@ export default function AdminDashboard() {
                   <h2 style={{ fontSize: '1.2rem', color: '#FFD700', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1.5rem' }}>
                     🖼️ Gallery Images ({gallery.length})
                   </h2>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '1rem', maxHeight: 550, overflowY: 'auto' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(140px, 100%), 1fr))', gap: '1rem', maxHeight: 550, overflowY: 'auto' }}>
                     {gallery.map(g => (
                       <div key={g.id} style={{ border: '1px solid rgba(255,255,255,0.05)', borderRadius: '6px', overflow: 'hidden', background: 'rgba(255,255,255,0.01)', position: 'relative' }}>
                         <img src={g.url} alt="" style={{ width: '100%', height: 90, objectFit: 'cover' }} />
@@ -1769,7 +1770,7 @@ export default function AdminDashboard() {
 
             {/* TAB: ALERTS / NOTIFICATIONS MANAGEMENT */}
             {activeTab === 'notifications' && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(340px, 100%), 1fr))', gap: '2rem' }}>
                 <div style={globalCardStyle}>
                   <h2 style={{ fontSize: '1.2rem', color: '#FFD700', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1.5rem' }}>
                     {editNotificationId ? '✍️ Edit Alert' : '📢 Broadcast Custom Alert'}
@@ -1822,7 +1823,7 @@ export default function AdminDashboard() {
 
             {/* TAB: USERS MANAGEMENT */}
             {activeTab === 'users' && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(340px, 100%), 1fr))', gap: '2rem' }}>
                 <div style={globalCardStyle}>
                   <h2 style={{ fontSize: '1.2rem', color: '#FFD700', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1.5rem' }}>
                     {editUserId ? '✍️ Edit User Account' : '👤 Create User Account'}

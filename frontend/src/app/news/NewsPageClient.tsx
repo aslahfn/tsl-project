@@ -86,7 +86,7 @@ export default function NewsPageClient({ articles }: { articles: NewsArticle[] }
                 borderRadius: '24px',
                 overflow: 'hidden',
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
               }}
@@ -242,7 +242,7 @@ export default function NewsPageClient({ articles }: { articles: NewsArticle[] }
             layout
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(290px, 100%), 1fr))',
               gap: '2rem',
             }}
           >
