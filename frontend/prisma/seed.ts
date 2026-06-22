@@ -1,3 +1,7 @@
+import { config } from 'dotenv';
+config({ path: '.env.local' });
+config();
+
 import bcrypt from 'bcryptjs';
 import { teams, players, standings, fixtures, newsArticles, galleryImages, sponsors } from '../src/lib/data';
 import { prisma } from '../src/lib/prisma';

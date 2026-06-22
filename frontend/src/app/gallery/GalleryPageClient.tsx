@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, ChevronLeft, ChevronRight, X, ZoomIn } from 'lucide-react';
 import PageHeader from '@/components/ui/PageHeader';
+import { SafeImage } from '@/components/ui/SafeImage';
 
 interface GalleryImageFromDB {
   id: string;
@@ -150,7 +151,12 @@ export default function GalleryPageClient({ images }: GalleryPageClientProps) {
                     if (overlay) overlay.style.opacity = '0';
                   }}
                 >
-                  <Camera size={24} color="rgba(255,255,255,0.15)" />
+                  <SafeImage
+                    src={img.url}
+                    alt={img.caption}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }}
+                    fallback={<Camera size={24} color="rgba(255,255,255,0.15)" />}
+                  />
 
                   {/* Hover Overlay */}
                   <div
@@ -313,9 +319,16 @@ export default function GalleryPageClient({ images }: GalleryPageClientProps) {
                   justifyContent: 'center',
                   boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
                   marginBottom: '1.5rem',
+                  position: 'relative',
+                  overflow: 'hidden',
                 }}
               >
-                <Camera size={64} color="rgba(255,255,255,0.08)" />
+                <SafeImage
+                  src={filteredImages[lightboxIndex].url}
+                  alt={filteredImages[lightboxIndex].caption}
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                  fallback={<Camera size={64} color="rgba(255,255,255,0.08)" />}
+                />
               </motion.div>
 
               <h4 style={{ color: '#fff', fontSize: '1.1rem', margin: '0 0 0.5rem 0' }}>

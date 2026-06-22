@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="grad-LSF" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a24;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#050508;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow-LSF">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <circle cx="100" cy="100" r="95" fill="url(#grad-LSF)" stroke="#3498db" stroke-width="4"/>
+  <path d="M 50,150 L 100,60 L 150,150" fill="none" stroke="#3498db" stroke-width="8" opacity="0.2"/>
+  <circle cx="100" cy="100" r="75" fill="none" stroke="#3498db" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+  <text x="100" y="115" font-family="Arial, sans-serif" font-weight="900" font-size="48" fill="#3498db" text-anchor="middle" filter="url(#glow-LSF)">LSF</text>
+</svg>
