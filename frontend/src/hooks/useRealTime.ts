@@ -11,7 +11,6 @@ export function useRealTime(onEventReceived?: (event: any) => void) {
     eventSource.onmessage = (e) => {
       try {
         const data = JSON.parse(e.data);
-        console.log('Real-time event:', data);
 
         // Refresh Next.js Server Component data on active pages
         router.refresh();
