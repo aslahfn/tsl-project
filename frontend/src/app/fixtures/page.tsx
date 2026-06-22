@@ -13,7 +13,7 @@ export default async function FixturesPage() {
   const [fixtures, teams] = await Promise.all([
     prisma.fixture.findMany({
       orderBy: [{ date: 'asc' }, { time: 'asc' }],
-      include: { homeTeam: true, awayTeam: true, manOfTheMatch: true },
+      include: { homeTeam: true, awayTeam: true, manOfTheMatch: true, predictions: true },
     }),
     prisma.team.findMany({ orderBy: { name: 'asc' } }),
   ]);

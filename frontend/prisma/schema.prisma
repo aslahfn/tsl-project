@@ -100,6 +100,10 @@ model Fixture {
   referee       String? @default("")
 
   events     MatchEvent[]
+  predictions Prediction[]
+
+  predictionWinnerName String?
+  predictionWinnerContact String?
 }
 
 model Standing {
@@ -180,4 +184,20 @@ enum EventType {
   GOAL
   YELLOW_CARD
   RED_CARD
+}
+
+model Prediction {
+  id         String   @id @default(cuid())
+  
+  fixtureId  String
+  fixture    Fixture  @relation(fields: [fixtureId], references: [id], onDelete: Cascade)
+  
+  voterName  String
+  voterContact String
+  
+  predictedResult String // 'HOME', 'AWAY', or 'DRAW'
+  
+  createdAt  DateTime @default(now())
+  
+  @@unique([fixtureId, voterContact])
 }

@@ -2,6 +2,7 @@ import NextAuth from 'next-auth';
 import Google from 'next-auth/providers/google';
 import { prisma } from '@/lib/prisma';
 import { authConfig } from './auth.config';
+import { sendLoginNotification } from '@/lib/mail';
 
 const googleClientId     = process.env.AUTH_GOOGLE_ID;
 const googleClientSecret = process.env.AUTH_GOOGLE_SECRET;
@@ -65,5 +66,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
   },
+  events: {
+    async signIn({ user }) {
+      if (user.email && user.name) {
+        // Run asynchronously so it doesn't block the login flow
+        sendLoginNotification(user.email, user.name).catch(console.error);
+      }
+    }
+  }
 });
 

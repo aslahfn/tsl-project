@@ -6,6 +6,7 @@ import { Calendar as CalendarIcon, Filter, Info, MapPin, Search } from 'lucide-r
 import { formatDate, formatTime } from '@/lib/utils';
 import TeamLogo from '@/components/ui/TeamLogo';
 import PageHeader from '@/components/ui/PageHeader';
+import MatchPredictionCard from '@/components/fixtures/MatchPredictionCard';
 import { useRealTime } from '@/hooks/useRealTime';
 
 interface Team {
@@ -41,6 +42,12 @@ interface Fixture {
   matchReport?: string | null;
   attendance?: number | null;
   referee?: string | null;
+  
+  predictionWinnerName?: string | null;
+  predictions?: {
+    id: string;
+    predictedResult: string;
+  }[];
 }
 
 export default function FixturesPageClient({ fixtures, teams }: { fixtures: Fixture[]; teams: Team[] }) {
@@ -494,6 +501,38 @@ export default function FixturesPageClient({ fixtures, teams }: { fixtures: Fixt
                             </div>
                           )}
                         </div>
+                      </div>
+                    )}
+
+                    {/* UPCOMING Matches: Prediction Card */}
+                    {!isFinished && !isLive && (
+                      <MatchPredictionCard 
+                        fixtureId={fixture.id} 
+                        homeTeamName={fixture.homeTeam.name} 
+                        awayTeamName={fixture.awayTeam.name} 
+                        predictions={fixture.predictions || []}
+                      />
+                    )}
+
+                    {/* Prediction Winner Banner */}
+                    {isFinished && fixture.predictionWinnerName && (
+                      <div style={{
+                        marginTop: '1rem',
+                        padding: '1rem',
+                        background: 'rgba(212, 175, 55, 0.1)',
+                        border: '1px solid rgba(212, 175, 55, 0.3)',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.75rem'
+                      }}>
+                        <span style={{ fontSize: '1.25rem' }}>🎉</span>
+                        <div style={{ textAlign: 'center' }}>
+                          <div style={{ fontSize: '0.75rem', color: '#FFD700', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, marginBottom: '0.2rem' }}>Lucky Prediction Winner</div>
+                          <div style={{ fontSize: '1.1rem', color: '#fff', fontWeight: 600 }}>{fixture.predictionWinnerName}</div>
+                        </div>
+                        <span style={{ fontSize: '1.25rem' }}>🎉</span>
                       </div>
                     )}
                   </motion.div>

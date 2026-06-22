@@ -1405,7 +1405,36 @@ export default function AdminDashboard() {
 
                           </div>
                         </div>
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                          {f.status === 'FINISHED' && !f.predictionWinnerName && (
+                            <button
+                              onClick={async () => {
+                                if (confirm('Pick a random prediction winner for this match?')) {
+                                  try {
+                                    const res = await fetch('/api/admin/predictions/pick-winner', {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({ fixtureId: f.id })
+                                    });
+                                    const data = await res.json();
+                                    if (!res.ok) throw new Error(data.error);
+                                    alert(`🎉 Prediction Winner: ${data.winner}`);
+                                    // You can't call showFeedback directly here unless it's defined, but it is.
+                                    // Actually showFeedback is available in this scope.
+                                    fetchData(); // reload
+                                  } catch (e: any) {
+                                    alert(`Failed: ${e.message}`);
+                                  }
+                                }
+                              }}
+                              style={{ background: '#FFD700', border: 'none', color: '#000', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 800, cursor: 'pointer', textTransform: 'uppercase' }}
+                            >
+                              Pick Winner
+                            </button>
+                          )}
+                          {f.predictionWinnerName && (
+                            <span style={{ fontSize: '0.65rem', color: '#FFD700', fontWeight: 600 }}>Winner: {f.predictionWinnerName}</span>
+                          )}
                           <button
                             onClick={() => {
                               setEditFixtureId(f.id);
