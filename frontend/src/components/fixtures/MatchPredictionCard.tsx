@@ -114,9 +114,9 @@ export default function MatchPredictionCard({ fixtureId, homeTeamName, awayTeamN
       {/* Progress Bar */}
       {totalVotes > 0 && (
         <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '3px', display: 'flex', overflow: 'hidden' }}>
-          <div style={{ width: \`\${homePct}%\`, background: '#22c55e', transition: 'width 1s ease' }} title={\`Home: \${homePct}%\`} />
-          <div style={{ width: \`\${drawPct}%\`, background: '#eab308', transition: 'width 1s ease' }} title={\`Draw: \${drawPct}%\`} />
-          <div style={{ width: \`\${awayPct}%\`, background: '#3b82f6', transition: 'width 1s ease' }} title={\`Away: \${awayPct}%\`} />
+          <div style={{ width: `${homePct}%`, background: '#22c55e', transition: 'width 1s ease' }} title={`Home: ${homePct}%`} />
+          <div style={{ width: `${drawPct}%`, background: '#eab308', transition: 'width 1s ease' }} title={`Draw: ${drawPct}%`} />
+          <div style={{ width: `${awayPct}%`, background: '#3b82f6', transition: 'width 1s ease' }} title={`Away: ${awayPct}%`} />
         </div>
       )}
       
