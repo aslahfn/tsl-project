@@ -735,6 +735,17 @@ export async function approvePendingAdmin(id: string) {
   });
 }
 
+export async function approvePendingManager(id: string) {
+  return withErrorHandling(async () => {
+    await checkSuperAdmin();
+    const user = await prisma.user.update({
+      where: { id },
+      data: { role: 'team_manager' }
+    });
+    return user;
+  });
+}
+
 const loginAttempts = new Map<string, { count: number; resetTime: number }>();
 const WINDOW_SIZE_MS = 60 * 1000; // 1 minute
 const MAX_ATTEMPTS = 5;

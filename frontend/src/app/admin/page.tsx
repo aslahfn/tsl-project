@@ -12,7 +12,7 @@ import {
   saveSponsor, deleteSponsor,
   saveGalleryImage, deleteGalleryImage,
   saveNotification, deleteNotification,
-  saveUser, deleteUser, approvePendingAdmin,
+  saveUser, deleteUser, approvePendingAdmin, approvePendingManager,
   triggerRecalculate, logoutAdmin
 } from './actions';
 
@@ -1941,11 +1941,58 @@ export default function AdminDashboard() {
                     </div>
                   )}
 
+                  {users.filter(u => u.role === 'pending_manager').length > 0 && (
+                    <div style={{ marginBottom: '2.5rem' }}>
+                      <h2 style={{ fontSize: '1.2rem', color: '#ffb347', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        📋 Pending Manager Requests
+                      </h2>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                        {users.filter(u => u.role === 'pending_manager').map(u => (
+                          <div key={u.id} style={{ padding: '0.75rem', border: '1px solid rgba(255,179,71,0.3)', borderRadius: '0.5rem', background: 'rgba(255,179,71,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                              <div style={{ fontSize: '0.9rem', fontWeight: 700 }}>{u.name}</div>
+                              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>{u.email}</div>
+                              <span style={{ display: 'inline-block', fontSize: '0.65rem', background: 'rgba(255,179,71,0.15)', color: '#ffb347', fontWeight: 700, padding: '0.1rem 0.4rem', borderRadius: '4px', textTransform: 'uppercase', marginTop: '0.3rem' }}>Requires Approval</span>
+                            </div>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                              <button
+                                onClick={async () => {
+                                  if (confirm(`Approve ${u.name} as a Team Manager?`)) {
+                                    setDbLoading(true);
+                                    await approvePendingManager(u.id);
+                                    showFeedback('Manager request approved!');
+                                    fetchData();
+                                  }
+                                }}
+                                style={{ background: '#22c55e', border: 'none', color: '#000', borderRadius: '0.3rem', fontSize: '0.75rem', fontWeight: 700, padding: '0.4rem 0.75rem', cursor: 'pointer' }}
+                              >
+                                Approve
+                              </button>
+                              <button
+                                onClick={async () => {
+                                  if (confirm(`Reject and delete request for ${u.name}?`)) {
+                                    setDbLoading(true);
+                                    await deleteUser(u.id);
+                                    showFeedback('Manager request rejected.');
+                                    fetchData();
+                                  }
+                                }}
+                                style={{ background: 'rgba(255,80,80,0.1)', border: '1px solid rgba(255,80,80,0.3)', color: '#ff6b6b', borderRadius: '0.3rem', fontSize: '0.75rem', fontWeight: 600, padding: '0.4rem 0.75rem', cursor: 'pointer' }}
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <h2 style={{ fontSize: '1.2rem', color: '#FFD700', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1.5rem' }}>
                     👥 User Accounts Directory
                   </h2>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    {users.filter(u => u.role !== 'pending').map(u => (
+                    {users.filter(u => u.role !== 'pending' && u.role !== 'pending_manager').map(u => (
                       <div key={u.id} style={{ padding: '0.75rem', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '0.5rem', background: 'rgba(255,255,255,0.01)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
                           <div style={{ fontSize: '0.9rem', fontWeight: 700 }}>{u.name}</div>
