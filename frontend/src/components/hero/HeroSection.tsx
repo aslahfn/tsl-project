@@ -96,29 +96,45 @@ export default function HeroSection({ nextMatch }: { nextMatch: NextMatch | null
         backgroundSize: '80px 80px',
       }} />
 
-      {/* Stadium lights */}
-      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-        {[
-          { top: '5%', left: '10%', color: 'rgba(212,175,55,0.1)' },
-          { top: '5%', right: '10%', color: 'rgba(212,175,55,0.08)' },
-          { top: '15%', left: '30%', color: 'rgba(212,175,55,0.06)' },
-          { top: '15%', right: '30%', color: 'rgba(212,175,55,0.04)' },
-        ].map((light, i) => (
-          <div
-            key={i}
-            className="stadium-light"
-            style={{
-              position: 'absolute',
-              width: '300px',
-              height: '600px',
-              background: `linear-gradient(180deg, ${light.color} 0%, transparent 100%)`,
-              clipPath: 'polygon(40% 0%, 60% 0%, 100% 100%, 0% 100%)',
-              ...light,
-              animationDelay: `${i * 0.7}s`,
-            }}
-          />
-        ))}
+      {/* Stadium lights & sweeping effects */}
+      <style>{`
+        @keyframes sweep-left {
+          0%, 100% { transform: rotate(-15deg) translateY(-10%); }
+          50% { transform: rotate(5deg) translateY(0%); }
+        }
+        @keyframes sweep-right {
+          0%, 100% { transform: rotate(15deg) translateY(-10%); }
+          50% { transform: rotate(-5deg) translateY(0%); }
+        }
+        .floodlight {
+          position: absolute;
+          width: 40vw;
+          height: 120vh;
+          background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(212, 175, 55, 0.02) 40%, transparent 80%);
+          filter: blur(40px);
+          pointer-events: none;
+          transform-origin: top center;
+        }
+        .floodlight-left {
+          top: -20%;
+          left: -10%;
+          animation: sweep-left 14s ease-in-out infinite;
+        }
+        .floodlight-right {
+          top: -20%;
+          right: -10%;
+          animation: sweep-right 16s ease-in-out infinite;
+        }
+      `}</style>
+      
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
+        <div className="floodlight floodlight-left" />
+        <div className="floodlight floodlight-right" />
+        {/* Core light sources */}
+        <div style={{ position: 'absolute', top: '-10%', left: '10%', width: '30vw', height: '30vw', background: 'radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%)', filter: 'blur(50px)' }} />
+        <div style={{ position: 'absolute', top: '-10%', right: '10%', width: '30vw', height: '30vw', background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)', filter: 'blur(50px)' }} />
       </div>
+
 <motion.img
   src="/league-logo.png"
   alt="League Background"

@@ -323,8 +323,24 @@ export default function LatestMatchesSection({ fixtures }: { fixtures: Fixture[]
   if (displayMatches.length === 0) return null;
 
   return (
-    <section className="section-padding" style={{ background: 'var(--bg-secondary)' }} id="latest-matches">
-      <div className="container-wide">
+    <section className="section-padding" style={{ position: 'relative', background: 'var(--bg-secondary)', overflow: 'hidden' }} id="latest-matches">
+      {/* SVG Pitch Geometry Watermark */}
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '120%', minWidth: '1000px', height: '120%', opacity: 0.02, pointerEvents: 'none', zIndex: 0 }}>
+        <rect x="50" y="50" width="900" height="500" fill="none" stroke="#FFF" strokeWidth="4"/>
+        <line x1="500" y1="50" x2="500" y2="550" stroke="#FFF" strokeWidth="4"/>
+        <circle cx="500" cy="300" r="80" fill="none" stroke="#FFF" strokeWidth="4"/>
+        <circle cx="500" cy="300" r="4" fill="#FFF"/>
+        <rect x="50" y="150" width="150" height="300" fill="none" stroke="#FFF" strokeWidth="4"/>
+        <rect x="800" y="150" width="150" height="300" fill="none" stroke="#FFF" strokeWidth="4"/>
+        <rect x="50" y="225" width="50" height="150" fill="none" stroke="#FFF" strokeWidth="4"/>
+        <rect x="900" y="225" width="50" height="150" fill="none" stroke="#FFF" strokeWidth="4"/>
+        <path d="M 200 240 A 80 80 0 0 1 200 360" fill="none" stroke="#FFF" strokeWidth="4"/>
+        <path d="M 800 240 A 80 80 0 0 0 800 360" fill="none" stroke="#FFF" strokeWidth="4"/>
+        <circle cx="160" cy="300" r="4" fill="#FFF"/>
+        <circle cx="840" cy="300" r="4" fill="#FFF"/>
+      </svg>
+
+      <div className="container-wide" style={{ position: 'relative', zIndex: 1 }}>
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

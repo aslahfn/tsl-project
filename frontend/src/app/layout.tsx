@@ -4,6 +4,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import GlobalBackground from '@/components/layout/GlobalBackground';
+import StadiumParticles from '@/components/ui/StadiumParticles';
 import { SessionProvider } from 'next-auth/react';
 
 export const metadata: Metadata = {
@@ -41,6 +42,7 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <SessionProvider>
           <GlobalBackground />
+          <StadiumParticles />
           <LoadingScreen />
           <Navbar />
           <main>{children}</main>
