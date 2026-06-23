@@ -114,7 +114,7 @@ export default function AdminDashboard() {
   const [newsForm, setNewsForm] = useState({
     title: '', slug: '', excerpt: '', content: '',
     category: 'MATCH_REPORT', author: 'SLS Admin', coverImage: '',
-    featured: false, tags: '', manOfTheMatch: ''
+    featured: false, tags: '', manOfTheMatch: '', matchId: ''
   });
 
   const [editSponsorId, setEditSponsorId] = useState<string | null>(null);
@@ -1515,9 +1515,43 @@ export default function AdminDashboard() {
                       </label>
                     </div>
 
-                    <div>
-                      <label style={labelStyle}>Man of the Match name (for article card)</label>
-                      <input type="text" value={newsForm.manOfTheMatch} onChange={e => setNewsForm({ ...newsForm, manOfTheMatch: e.target.value })} placeholder="e.g. Arjun Faize" style={inputStyle} />
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                      <div style={{ flex: 1 }}>
+                        <label style={labelStyle}>Related Match (Optional)</label>
+                        <select 
+                          value={newsForm.matchId || ''} 
+                          onChange={e => setNewsForm({ ...newsForm, matchId: e.target.value, manOfTheMatch: '' })} 
+                          style={inputStyle}
+                        >
+                          <option value="">-- No Match Selected --</option>
+                          {fixtures.map(f => (
+                            <option key={f.id} value={f.id}>{fixtureLabel(f)}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <label style={labelStyle}>Man of the Match</label>
+                        {newsForm.matchId ? (
+                          <select 
+                            value={newsForm.manOfTheMatch} 
+                            onChange={e => setNewsForm({ ...newsForm, manOfTheMatch: e.target.value })} 
+                            style={inputStyle}
+                          >
+                            <option value="">-- Select Player --</option>
+                            {players
+                              .filter(p => {
+                                const selectedFixture = fixtures.find(f => f.id === newsForm.matchId);
+                                if (!selectedFixture) return false;
+                                return p.teamId === selectedFixture.homeTeamId || p.teamId === selectedFixture.awayTeamId;
+                              })
+                              .map(p => (
+                                <option key={p.id} value={p.name}>{p.name} ({teamShort(teams.find(t => t.id === p.teamId))})</option>
+                              ))}
+                          </select>
+                        ) : (
+                          <input type="text" value={newsForm.manOfTheMatch} onChange={e => setNewsForm({ ...newsForm, manOfTheMatch: e.target.value })} placeholder="e.g. Arjun Faize" style={inputStyle} />
+                        )}
+                      </div>
                     </div>
 
 
@@ -1542,7 +1576,7 @@ export default function AdminDashboard() {
                       {editNewsId && (
                         <button type="button" onClick={() => {
                           setEditNewsId(null);
-                          setNewsForm({ title: '', slug: '', excerpt: '', content: '', category: 'MATCH_REPORT', author: 'SLS Admin', coverImage: '', featured: false, tags: '', manOfTheMatch: '' });
+                          setNewsForm({ title: '', slug: '', excerpt: '', content: '', category: 'MATCH_REPORT', author: 'SLS Admin', coverImage: '', featured: false, tags: '', manOfTheMatch: '', matchId: '' });
                         }} style={{ background: 'rgba(255,255,255,0.08)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '0.4rem', padding: '0.75rem', cursor: 'pointer' }}>
                           Cancel
                         </button>
