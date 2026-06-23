@@ -1760,46 +1760,44 @@ export default function AdminDashboard() {
                       <label style={labelStyle}>Caption</label>
                       <input type="text" required value={galleryForm.caption} onChange={e => setGalleryForm({ ...galleryForm, caption: e.target.value })} placeholder="e.g. Fans celebrating at stadium" style={inputStyle} />
                     </div>
-                    <div>
-                      <label style={labelStyle}>Related Match (Optional)</label>
-                      <select value={galleryForm.matchId} onChange={e => setGalleryForm({ ...galleryForm, matchId: e.target.value })} style={inputStyle}>
-                        <option value="">-- None --</option>
-                        {fixtures.map(f => (
-                          <option key={f.id} value={f.id}>{fixtureLabel(f)}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label style={labelStyle}>Tags (comma separated)</label>
-                      <input type="text" value={galleryForm.tags} onChange={e => setGalleryForm({ ...galleryForm, tags: e.target.value })} placeholder="e.g. Fans, Pettikada, Stadium" style={inputStyle} />
-                    </div>
-                    {galleryForm.matchId && (
-                      <div>
-                        <label style={labelStyle}>Quick Add Player to Tags</label>
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                      <div style={{ flex: 1 }}>
+                        <label style={labelStyle}>Related Match (Optional)</label>
                         <select 
-                          value="" 
-                          onChange={e => {
-                            if (!e.target.value) return;
-                            const currentTags = galleryForm.tags ? galleryForm.tags.split(',').map(t => t.trim()).filter(Boolean) : [];
-                            if (!currentTags.includes(e.target.value)) {
-                              setGalleryForm({ ...galleryForm, tags: [...currentTags, e.target.value].join(', ') });
-                            }
-                          }} 
+                          value={galleryForm.matchId || ''} 
+                          onChange={e => setGalleryForm({ ...galleryForm, matchId: e.target.value, tags: '' })} 
                           style={inputStyle}
                         >
-                          <option value="">-- Select Player to Tag --</option>
-                          {players
-                            .filter(p => {
-                              const selectedFixture = fixtures.find(f => f.id === galleryForm.matchId);
-                              if (!selectedFixture) return false;
-                              return p.teamId === selectedFixture.homeTeamId || p.teamId === selectedFixture.awayTeamId;
-                            })
-                            .map(p => (
-                              <option key={p.id} value={p.name}>{p.name} ({teamShort(teams.find(t => t.id === p.teamId))})</option>
-                            ))}
+                          <option value="">-- No Match Selected --</option>
+                          {fixtures.map(f => (
+                            <option key={f.id} value={f.id}>{fixtureLabel(f)}</option>
+                          ))}
                         </select>
                       </div>
-                    )}
+                      <div style={{ flex: 1 }}>
+                        <label style={labelStyle}>Man of the Match / Player Tag</label>
+                        {galleryForm.matchId ? (
+                          <select 
+                            value={galleryForm.tags} 
+                            onChange={e => setGalleryForm({ ...galleryForm, tags: e.target.value })} 
+                            style={inputStyle}
+                          >
+                            <option value="">-- Select Player --</option>
+                            {players
+                              .filter(p => {
+                                const selectedFixture = fixtures.find(f => f.id === galleryForm.matchId);
+                                if (!selectedFixture) return false;
+                                return p.teamId === selectedFixture.homeTeamId || p.teamId === selectedFixture.awayTeamId;
+                              })
+                              .map(p => (
+                                <option key={p.id} value={p.name}>{p.name} ({teamShort(teams.find(t => t.id === p.teamId))})</option>
+                              ))}
+                          </select>
+                        ) : (
+                          <input type="text" value={galleryForm.tags} onChange={e => setGalleryForm({ ...galleryForm, tags: e.target.value })} placeholder="e.g. Arjun Faize" style={inputStyle} />
+                        )}
+                      </div>
+                    </div>
                     <div>
                       <label style={labelStyle}>Upload Image File (JPEG/PNG)</label>
                       <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, (b64) => setGalleryForm({ ...galleryForm, url: b64 }))} style={{ color: '#fff', fontSize: '0.8rem' }} />
