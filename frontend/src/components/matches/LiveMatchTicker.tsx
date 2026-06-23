@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatDate } from '@/lib/utils';
 import { useRealTime } from '@/hooks/useRealTime';
@@ -20,14 +21,61 @@ interface Fixture {
 export default function LiveMatchTicker({ fixtures }: { fixtures: Fixture[] }) {
   useRealTime(); // Keep the ticker updated automatically
 
+  const [worldMatch, setWorldMatch] = useState<{
+    homeAbbrev: string;
+    awayAbbrev: string;
+    homeScore: string;
+    awayScore: string;
+    isLive: boolean;
+    timeStr: string;
+  } | null>(null);
+
+  useEffect(() => {
+    async function fetchWorldCup() {
+      try {
+        const res = await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard');
+        const data = await res.json();
+        if (data.events && data.events.length > 0) {
+          // Find first live match or fallback to first upcoming
+          const ev = data.events.find((e: any) => e.status.type.state === 'in') || data.events[0];
+          
+          if (ev && ev.competitions && ev.competitions[0]) {
+            const comp = ev.competitions[0];
+            const home = comp.competitors.find((c: any) => c.homeAway === 'home') || comp.competitors[0];
+            const away = comp.competitors.find((c: any) => c.homeAway === 'away') || comp.competitors[1];
+            
+            const isLive = ev.status.type.state === 'in';
+            const timeStr = isLive ? ev.status.type.shortDetail : (ev.status.type.state === 'pre' ? 'UPCOMING' : 'FT');
+
+            setWorldMatch({
+              homeAbbrev: home.team.abbreviation || 'T1',
+              awayAbbrev: away.team.abbreviation || 'T2',
+              homeScore: home.score || '0',
+              awayScore: away.score || '0',
+              isLive,
+              timeStr
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch world matches', err);
+      }
+    }
+    fetchWorldCup();
+    
+    // Poll every 60s
+    const interval = setInterval(fetchWorldCup, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   const liveMatches = fixtures.filter(f => f.status === 'LIVE');
   const upcomingMatches = fixtures.filter(f => f.status === 'UPCOMING');
 
   const activeMatch = liveMatches.length > 0 ? liveMatches[0] : (upcomingMatches.length > 0 ? upcomingMatches[0] : null);
 
-  if (!activeMatch) return null;
+  if (!activeMatch && !worldMatch) return null;
 
-  const isLive = activeMatch.status === 'LIVE';
+  const isLive = activeMatch ? activeMatch.status === 'LIVE' : false;
 
   return (
     <AnimatePresence>
@@ -46,71 +94,83 @@ export default function LiveMatchTicker({ fixtures }: { fixtures: Fixture[] }) {
       >
         <Link href="/#latest-matches" style={{ textDecoration: 'none' }}>
           <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             style={{
               display: 'flex',
-              alignItems: 'center',
-              gap: '1rem',
-              padding: '0.5rem 1.5rem',
-              background: isLive ? 'rgba(20, 5, 5, 0.85)' : 'rgba(10, 10, 15, 0.85)',
+              alignItems: 'stretch',
+              background: isLive || (worldMatch && worldMatch.isLive) ? 'rgba(20, 5, 5, 0.85)' : 'rgba(10, 10, 15, 0.85)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
-              border: isLive ? '1px solid rgba(255, 59, 59, 0.4)' : '1px solid rgba(0, 180, 255, 0.3)',
+              border: isLive || (worldMatch && worldMatch.isLive) ? '1px solid rgba(255, 59, 59, 0.4)' : '1px solid rgba(0, 180, 255, 0.3)',
               borderRadius: '100px',
-              boxShadow: isLive ? '0 10px 30px rgba(255, 59, 59, 0.2)' : '0 10px 30px rgba(0, 0, 0, 0.5)',
+              boxShadow: isLive || (worldMatch && worldMatch.isLive) ? '0 10px 30px rgba(255, 59, 59, 0.2)' : '0 10px 30px rgba(0, 0, 0, 0.5)',
+              overflow: 'hidden'
             }}
           >
-            {/* Status Badge */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.3rem',
-              fontSize: '0.65rem',
-              fontWeight: 800,
-              letterSpacing: '0.1em',
-              color: isLive ? '#FF3B3B' : '#00b4ff',
-              textTransform: 'uppercase'
-            }}>
-              {isLive && (
-                <span style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
-                  background: '#FF3B3B',
-                  animation: 'pulse 2s infinite'
-                }} />
-              )}
-              {isLive ? 'LIVE' : 'NEXT'}
-            </div>
-
-            <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.1)' }} />
-
-            {/* Match Info */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontFamily: 'var(--font-bebas, Bebas Neue), sans-serif', fontSize: '1.2rem', color: '#fff', letterSpacing: '0.05em', paddingTop: '2px' }}>
-              <span style={{ opacity: 0.9 }}>{activeMatch.homeTeam.shortName}</span>
-              
-              {isLive ? (
-                <span style={{ color: 'var(--gold)' }}>
-                  {activeMatch.homeScore} - {activeMatch.awayScore}
-                </span>
-              ) : (
-                <span style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em' }}>
-                  v
-                </span>
-              )}
-
-              <span style={{ opacity: 0.9 }}>{activeMatch.awayTeam.shortName}</span>
-            </div>
-
-            {/* Time / Extra Info */}
-            {!isLive && (
-              <>
-                <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.1)' }} />
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                  {formatDate(activeMatch.date)} • {activeMatch.time.substring(0, 5)}
+            {/* WORLD CUP SIDE (LEFT) */}
+            {worldMatch && (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 1.25rem',
+                borderRight: activeMatch ? '1px solid rgba(255,255,255,0.1)' : 'none'
+              }}>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.65rem', fontWeight: 800,
+                  letterSpacing: '0.1em', color: worldMatch.isLive ? '#FF3B3B' : 'var(--text-muted)', textTransform: 'uppercase'
+                }}>
+                  {worldMatch.isLive && (
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF3B3B', animation: 'pulse 2s infinite' }} />
+                  )}
+                  {worldMatch.isLive ? 'WORLD' : 'WORLD'}
                 </div>
-              </>
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'var(--font-bebas, Bebas Neue), sans-serif', fontSize: '1.2rem', color: '#fff', letterSpacing: '0.05em', paddingTop: '2px' }}>
+                  <span style={{ opacity: 0.9 }}>{worldMatch.homeAbbrev}</span>
+                  {worldMatch.isLive ? (
+                    <span style={{ color: 'var(--gold)' }}>{worldMatch.homeScore} - {worldMatch.awayScore}</span>
+                  ) : (
+                    <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em' }}>v</span>
+                  )}
+                  <span style={{ opacity: 0.9 }}>{worldMatch.awayAbbrev}</span>
+                </div>
+                
+                {!worldMatch.isLive && (
+                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>{worldMatch.timeStr}</div>
+                )}
+              </div>
+            )}
+
+            {/* TSL SIDE (RIGHT) */}
+            {activeMatch && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 1.25rem' }}>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.65rem', fontWeight: 800,
+                  letterSpacing: '0.1em', color: isLive ? '#FF3B3B' : '#00b4ff', textTransform: 'uppercase'
+                }}>
+                  {isLive && (
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF3B3B', animation: 'pulse 2s infinite' }} />
+                  )}
+                  {isLive ? 'TSL LIVE' : 'TSL NEXT'}
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'var(--font-bebas, Bebas Neue), sans-serif', fontSize: '1.2rem', color: '#fff', letterSpacing: '0.05em', paddingTop: '2px' }}>
+                  <span style={{ opacity: 0.9 }}>{activeMatch.homeTeam.shortName}</span>
+                  
+                  {isLive ? (
+                    <span style={{ color: 'var(--gold)' }}>{activeMatch.homeScore} - {activeMatch.awayScore}</span>
+                  ) : (
+                    <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em' }}>v</span>
+                  )}
+
+                  <span style={{ opacity: 0.9 }}>{activeMatch.awayTeam.shortName}</span>
+                </div>
+
+                {!isLive && (
+                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
+                    {formatDate(activeMatch.date)} • {activeMatch.time.substring(0, 5)}
+                  </div>
+                )}
+              </div>
             )}
           </motion.div>
         </Link>
