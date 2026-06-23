@@ -274,16 +274,17 @@ function MatchCard({ match, isFeatured = false }: { match: Fixture, isFeatured?:
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem',
-              background: 'rgba(212,175,55,0.03)',
+              gap: '0.75rem',
+              background: 'rgba(212,175,55,0.06)',
               border: '1px solid var(--border-gold)',
-              padding: '0.4rem 0.6rem',
-              borderRadius: '6px'
+              padding: '0.5rem 0.75rem',
+              borderRadius: '8px',
+              marginTop: '0.25rem'
             }}>
-              <span style={{ color: 'var(--gold)' }}>★</span>
+              <span style={{ color: 'var(--gold)', fontSize: '1.2rem' }}>★</span>
               <div>
-                <span style={{ color: 'var(--gold)', fontWeight: 600, fontSize: '0.7rem', textTransform: 'uppercase', marginRight: '0.25rem' }}>POTM:</span>
-                <span style={{ fontWeight: 600, color: '#fff' }}>{match.manOfTheMatch.name}</span>
+                <span style={{ color: 'var(--gold)', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', marginRight: '0.35rem', letterSpacing: '0.05em' }}>POTM:</span>
+                <span style={{ fontWeight: 700, color: '#fff', fontSize: '1.1rem', letterSpacing: '0.02em' }}>{match.manOfTheMatch.name}</span>
               </div>
             </div>
           )}
