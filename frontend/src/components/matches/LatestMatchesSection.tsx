@@ -85,11 +85,18 @@ function MatchCard({ match, isFeatured = false }: { match: Fixture, isFeatured?:
         </span>
         <span style={{
           padding: '0.2rem 0.6rem', borderRadius: '100px',
-          background: match.status === 'FINISHED' ? 'rgba(212,175,55,0.06)' : 'rgba(0,180,255,0.06)',
-          border: match.status === 'FINISHED' ? '1px solid var(--border-gold)' : '1px solid rgba(0,180,255,0.3)',
-          fontSize: '0.65rem', color: match.status === 'FINISHED' ? 'var(--gold)' : '#00b4ff', letterSpacing: '0.1em',
+          background: match.status === 'LIVE' ? 'rgba(255, 59, 59, 0.1)' : match.status === 'FINISHED' ? 'rgba(212,175,55,0.06)' : 'rgba(0,180,255,0.06)',
+          border: match.status === 'LIVE' ? '1px solid rgba(255, 59, 59, 0.5)' : match.status === 'FINISHED' ? '1px solid var(--border-gold)' : '1px solid rgba(0,180,255,0.3)',
+          fontSize: '0.65rem', 
+          color: match.status === 'LIVE' ? '#FF3B3B' : match.status === 'FINISHED' ? 'var(--gold)' : '#00b4ff', 
+          letterSpacing: '0.1em',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.3rem',
+          animation: match.status === 'LIVE' ? 'pulse 2s infinite' : 'none'
         }}>
-          {match.status === 'FINISHED' ? 'FULL TIME' : 'UPCOMING PREVIEW'}
+          {match.status === 'LIVE' && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF3B3B' }} />}
+          {match.status === 'LIVE' ? 'LIVE NOW' : match.status === 'FINISHED' ? 'FULL TIME' : 'UPCOMING PREVIEW'}
         </span>
       </div>
 
@@ -121,14 +128,14 @@ function MatchCard({ match, isFeatured = false }: { match: Fixture, isFeatured?:
 
         {/* Score or vs */}
         <div style={{ textAlign: 'center' }}>
-          {match.status === 'FINISHED' ? (
+          {match.status === 'FINISHED' || match.status === 'LIVE' ? (
             <div className="font-display" style={{
               fontSize: isFeatured ? '4rem' : '2.5rem', letterSpacing: '0.05em', lineHeight: 1,
               color: '#fff',
             }}>
-              <span style={{ color: (match.homeScore ?? 0) > (match.awayScore ?? 0) ? 'var(--gold)' : '#fff' }}>{match.homeScore}</span>
-              <span style={{ color: 'rgba(255,255,255,0.3)', margin: '0 0.25rem' }}>-</span>
-              <span style={{ color: (match.awayScore ?? 0) > (match.homeScore ?? 0) ? 'var(--gold)' : '#fff' }}>{match.awayScore}</span>
+              <span style={{ color: (match.homeScore ?? 0) > (match.awayScore ?? 0) ? (match.status === 'LIVE' ? '#fff' : 'var(--gold)') : '#fff' }}>{match.homeScore}</span>
+              <span style={{ color: match.status === 'LIVE' ? '#FF3B3B' : 'rgba(255,255,255,0.3)', margin: '0 0.25rem' }}>-</span>
+              <span style={{ color: (match.awayScore ?? 0) > (match.homeScore ?? 0) ? (match.status === 'LIVE' ? '#fff' : 'var(--gold)') : '#fff' }}>{match.awayScore}</span>
             </div>
           ) : (
             <div className="font-display" style={{
@@ -286,27 +293,28 @@ import { AnimatePresence } from 'framer-motion';
 export default function LatestMatchesSection({ fixtures }: { fixtures: Fixture[] }) {
   const [activeMatchId, setActiveMatchId] = useState<string | null>(null);
 
-  // Get up to 3 most recent finished matches
+  // Find matches by status
+  const liveMatches = fixtures.filter(f => f.status === 'LIVE');
   const recentMatches = fixtures.filter(f => f.status === 'FINISHED').reverse().slice(0, 3);
-  
-  // Find upcoming matches
   const upcomingFixtures = fixtures.filter(f => f.status === 'UPCOMING');
   
-  // Other upcoming matches to fill the grid if we don't have enough recent matches
-  const otherUpcoming = upcomingFixtures.slice(0, Math.max(1, 4 - recentMatches.length));
+  // Fill the grid up to 4 items
+  const otherUpcoming = upcomingFixtures.slice(0, Math.max(1, 4 - recentMatches.length - liveMatches.length));
   
-  const displayMatches = [...recentMatches, ...otherUpcoming];
+  const displayMatches = [...liveMatches, ...recentMatches, ...otherUpcoming];
 
-  // Set default active match to the first upcoming match, or first recent match
+  // Set default active match to the first live match, or upcoming match, or recent match
   useEffect(() => {
     if (!activeMatchId && fixtures.length > 0) {
-      if (upcomingFixtures.length > 0) {
+      if (liveMatches.length > 0) {
+        setActiveMatchId(liveMatches[0].id);
+      } else if (upcomingFixtures.length > 0) {
         setActiveMatchId(upcomingFixtures[0].id);
       } else if (recentMatches.length > 0) {
         setActiveMatchId(recentMatches[0].id);
       }
     }
-  }, [fixtures, activeMatchId, upcomingFixtures, recentMatches]);
+  }, [fixtures, activeMatchId, liveMatches, upcomingFixtures, recentMatches]);
 
   const activeMatch = fixtures.find(f => f.id === activeMatchId) || null;
 
