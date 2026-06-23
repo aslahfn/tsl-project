@@ -189,6 +189,13 @@ enum EventType {
   RED_CARD
 }
 
+model PushToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String?
+  createdAt DateTime @default(now())
+}
+
 model Prediction {
   id         String   @id @default(cuid())
   

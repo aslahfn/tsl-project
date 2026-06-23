@@ -628,7 +628,7 @@ export async function saveNotification(formData: {
     message: formData.message,
   };
 
-  let notification;
+  let notification: any;
   if (formData.id) {
     notification = await prisma.notification.update({
       where: { id: formData.id },
@@ -638,6 +638,36 @@ export async function saveNotification(formData: {
     notification = await prisma.notification.create({
       data,
     });
+
+    // Send Expo Push Notification
+    try {
+      const pushTokens = await prisma.pushToken.findMany();
+      const messages = pushTokens.map(pt => ({
+        to: pt.token,
+        sound: 'default',
+        title: notification.title,
+        body: notification.message,
+        data: { notificationId: notification.id },
+      }));
+
+      if (messages.length > 0) {
+        // Send in chunks of 100 as recommended by Expo
+        for (let i = 0; i < messages.length; i += 100) {
+          const chunk = messages.slice(i, i + 100);
+          await fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Accept-encoding': 'gzip, deflate',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(chunk),
+          }).catch(err => console.error('Push fetch error:', err));
+        }
+      }
+    } catch (pushErr) {
+      console.error('Failed to prepare Expo push notifications:', pushErr);
+    }
   }
 
   broadcastEvent('NEW_NOTIFICATION', {
