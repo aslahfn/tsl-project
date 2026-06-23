@@ -68,6 +68,21 @@ export default function LiveMatchTicker({ fixtures }: { fixtures: Fixture[] }) {
     return () => clearInterval(interval);
   }, []);
 
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Disappear when scrolled down more than 150px
+      if (window.scrollY > 150) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const liveMatches = fixtures.filter(f => f.status === 'LIVE');
   const upcomingMatches = fixtures.filter(f => f.status === 'UPCOMING');
 
@@ -112,11 +127,12 @@ export default function LiveMatchTicker({ fixtures }: { fixtures: Fixture[] }) {
       `}</style>
 
       <AnimatePresence>
-        {worldMatch && (
+        {isVisible && worldMatch && (
           <motion.div
             className="ticker-world"
             initial={{ x: -100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -100, opacity: 0, transition: { duration: 0.3 } }}
             transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.5 }}
           >
             <motion.div
@@ -167,11 +183,12 @@ export default function LiveMatchTicker({ fixtures }: { fixtures: Fixture[] }) {
           </motion.div>
         )}
 
-        {activeMatch && (
+        {isVisible && activeMatch && (
           <motion.div
             className="ticker-tsl"
             initial={{ x: 100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 100, opacity: 0, transition: { duration: 0.3 } }}
             transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.7 }}
           >
             <Link href="/#latest-matches" style={{ textDecoration: 'none' }}>
