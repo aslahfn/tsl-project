@@ -52,7 +52,7 @@ interface Fixture {
   events?: MatchEvent[];
 }
 
-function MatchCard({ match }: { match: Fixture }) {
+function MatchCard({ match, isFeatured = false }: { match: Fixture, isFeatured?: boolean }) {
   const hasSplitScorers = match.goalScorers && match.goalScorers.includes('|');
   const homeScorers = hasSplitScorers ? match.goalScorers!.split('|')[0].trim() : '';
   const awayScorers = hasSplitScorers ? match.goalScorers!.split('|')[1].trim() : '';
@@ -67,10 +67,16 @@ function MatchCard({ match }: { match: Fixture }) {
 
   return (
     <motion.div
-      className="match-card"
+      className={`match-card ${isFeatured ? 'featured' : ''}`}
       whileHover={{ y: -4, scale: 1.01 }}
       transition={{ type: 'spring', stiffness: 300 }}
       id={`match-card-${match.id}`}
+      style={{
+        padding: isFeatured ? '2rem' : '1.25rem 1.5rem',
+        background: isFeatured ? 'linear-gradient(135deg, rgba(10,10,20,0.8) 0%, rgba(0,180,255,0.05) 100%)' : 'var(--bg-card)',
+        border: isFeatured ? '1px solid rgba(0,180,255,0.3)' : '1px solid var(--border-gold)',
+        boxShadow: isFeatured ? '0 10px 40px -10px rgba(0,180,255,0.1)' : 'none'
+      }}
     >
       {/* Matchday badge */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
@@ -88,11 +94,11 @@ function MatchCard({ match }: { match: Fixture }) {
       </div>
 
       {/* Teams & Score */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'flex-start', gap: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: isFeatured ? 'center' : 'flex-start', gap: isFeatured ? '2rem' : '1rem' }}>
         {/* Home */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', flex: 1 }}>
-          <TeamLogo name={match.homeTeam.shortName} logo={match.homeTeam.logo} size={52} />
-          <span style={{ fontSize: '0.8rem', fontWeight: 600, textAlign: 'center', color: '#fff' }}>{match.homeTeam.shortName}</span>
+          <TeamLogo name={match.homeTeam.shortName} logo={match.homeTeam.logo} size={isFeatured ? 80 : 52} />
+          <span style={{ fontSize: isFeatured ? '1.2rem' : '0.8rem', fontWeight: 600, textAlign: 'center', color: '#fff' }}>{match.homeTeam.shortName}</span>
           
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '0.2rem', gap: '0.2rem' }}>
             {hasSplitScorers && homeScorers && homeScorers.split(',').map((scorer, i) => (
@@ -117,7 +123,7 @@ function MatchCard({ match }: { match: Fixture }) {
         <div style={{ textAlign: 'center' }}>
           {match.status === 'FINISHED' ? (
             <div className="font-display" style={{
-              fontSize: '2.5rem', letterSpacing: '0.05em', lineHeight: 1,
+              fontSize: isFeatured ? '4rem' : '2.5rem', letterSpacing: '0.05em', lineHeight: 1,
               color: '#fff',
             }}>
               <span style={{ color: (match.homeScore ?? 0) > (match.awayScore ?? 0) ? 'var(--gold)' : '#fff' }}>{match.homeScore}</span>
@@ -126,22 +132,22 @@ function MatchCard({ match }: { match: Fixture }) {
             </div>
           ) : (
             <div className="font-display" style={{
-              fontSize: '2.5rem', letterSpacing: '0.05em', lineHeight: 1,
+              fontSize: isFeatured ? '3.5rem' : '2.5rem', letterSpacing: '0.05em', lineHeight: 1,
               color: 'rgba(255,255,255,0.3)',
             }}>
               V S
             </div>
           )}
-          <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>{formatDate(match.date)}</div>
+          <div style={{ fontSize: isFeatured ? '0.8rem' : '0.65rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>{formatDate(match.date)}</div>
           {match.status === 'UPCOMING' && (
-            <div style={{ fontSize: '0.75rem', color: '#fff', marginTop: '0.2rem', fontWeight: 600 }}>{match.time.substring(0, 5)}</div>
+            <div style={{ fontSize: isFeatured ? '1rem' : '0.75rem', color: '#fff', marginTop: '0.2rem', fontWeight: 600 }}>{match.time.substring(0, 5)}</div>
           )}
         </div>
 
         {/* Away */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', flex: 1 }}>
-          <TeamLogo name={match.awayTeam.shortName} logo={match.awayTeam.logo} size={52} />
-          <span style={{ fontSize: '0.8rem', fontWeight: 600, textAlign: 'center', color: '#fff' }}>{match.awayTeam.shortName}</span>
+          <TeamLogo name={match.awayTeam.shortName} logo={match.awayTeam.logo} size={isFeatured ? 80 : 52} />
+          <span style={{ fontSize: isFeatured ? '1.2rem' : '0.8rem', fontWeight: 600, textAlign: 'center', color: '#fff' }}>{match.awayTeam.shortName}</span>
           
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '0.2rem', gap: '0.2rem' }}>
             {hasSplitScorers && awayScorers && awayScorers.split(',').map((scorer, i) => (
@@ -279,10 +285,16 @@ export default function LatestMatchesSection({ fixtures }: { fixtures: Fixture[]
   // Get up to 3 most recent finished matches
   const recentMatches = fixtures.filter(f => f.status === 'FINISHED').reverse().slice(0, 3);
   
-  // If we have less than 4 matches total in this section, fill the rest with upcoming previews
-  const upcomingMatches = fixtures.filter(f => f.status === 'UPCOMING').slice(0, 4 - recentMatches.length);
+  // Find upcoming matches
+  const upcomingFixtures = fixtures.filter(f => f.status === 'UPCOMING');
   
-  const displayMatches = [...recentMatches, ...upcomingMatches];
+  // The featured match is the first upcoming match
+  const featuredMatch = upcomingFixtures.length > 0 ? upcomingFixtures[0] : null;
+  
+  // Other upcoming matches to fill the grid if we don't have enough recent matches
+  const otherUpcoming = upcomingFixtures.slice(1, Math.max(1, 4 - recentMatches.length));
+  
+  const displayMatches = [...recentMatches, ...otherUpcoming];
 
   useRealTime();
 
@@ -308,20 +320,36 @@ export default function LatestMatchesSection({ fixtures }: { fixtures: Fixture[]
           </Link>
         </motion.div>
 
-        {/* Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '1.25rem' }}>
-          {displayMatches.map((match, i) => (
+        {/* Featured Match */}
+        {featuredMatch && (
+          <div style={{ marginBottom: '2rem', maxWidth: '800px', margin: '0 auto 3rem auto' }}>
             <motion.div
-              key={match.id}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 40, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
             >
-              <MatchCard match={match} />
+              <MatchCard match={featuredMatch} isFeatured={true} />
             </motion.div>
-          ))}
-        </div>
+          </div>
+        )}
+
+        {/* Grid */}
+        {displayMatches.length > 0 && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '1.25rem' }}>
+            {displayMatches.map((match, i) => (
+              <motion.div
+                key={match.id}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+              >
+                <MatchCard match={match} />
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
