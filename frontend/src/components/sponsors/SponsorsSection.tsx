@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 interface Sponsor {
   id: string;
@@ -119,7 +120,19 @@ export default function SponsorsSection({
 }: {
   sponsors: Sponsor[];
 }) {
-  const sponsorList = sponsors;
+  const [highlightIndex, setHighlightIndex] = useState(0);
+
+  useEffect(() => {
+    if (!sponsors || sponsors.length === 0) return;
+    const interval = setInterval(() => {
+      setHighlightIndex((prev) => (prev + 1) % sponsors.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [sponsors]);
+
+  if (!sponsors || sponsors.length === 0) return null;
+
+  const highlightedSponsor = sponsors[highlightIndex];
 
   return (
     <section
@@ -139,7 +152,7 @@ export default function SponsorsSection({
           transition={{ duration: 0.5 }}
           style={{
             textAlign: 'center',
-            marginBottom: '2rem',
+            marginBottom: '3rem',
           }}
         >
           <div
@@ -150,15 +163,65 @@ export default function SponsorsSection({
           </div>
         </motion.div>
 
+        {/* Featured Highlighted Sponsor Transition */}
+        <div style={{ position: 'relative', height: 280, display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '2rem' }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={highlightedSponsor.id}
+              initial={{ opacity: 0, scale: 0.9, filter: 'blur(5px)' }}
+              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, scale: 1.1, filter: 'blur(5px)' }}
+              transition={{ duration: 0.6, ease: "easeInOut" }}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                background: 'linear-gradient(135deg, rgba(212,175,55,0.1) 0%, rgba(10,10,20,0.8) 100%)',
+                border: '1px solid rgba(212,175,55,0.3)',
+                borderRadius: '1rem',
+                padding: '2.5rem 4rem',
+                boxShadow: '0 10px 40px -10px rgba(212,175,55,0.15)',
+                position: 'absolute'
+              }}
+            >
+              <div style={{ 
+                fontSize: '0.75rem', color: 'var(--gold)', textTransform: 'uppercase', 
+                letterSpacing: '0.2em', marginBottom: '1.5rem', fontWeight: 800,
+                display: 'flex', alignItems: 'center', gap: '0.5rem'
+              }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--gold)', boxShadow: '0 0 10px var(--gold)' }} />
+                Featured Sponsor
+              </div>
+              
+              <a href={highlightedSponsor.url || "#"} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <img 
+                  src={highlightedSponsor.logo || '/placeholder-sponsor.png'} 
+                  alt={highlightedSponsor.name}
+                  style={{ height: 90, maxWidth: 250, objectFit: 'contain', marginBottom: '1.5rem', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }} 
+                />
+                <div style={{ fontFamily: 'var(--font-bebas, Bebas Neue), sans-serif', fontSize: '1.8rem', color: '#fff', letterSpacing: '0.05em' }}>
+                  {highlightedSponsor.name}
+                </div>
+                {highlightedSponsor.description && (
+                  <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', marginTop: '0.5rem' }}>
+                    {highlightedSponsor.description}
+                  </div>
+                )}
+              </a>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* All Sponsors Grid */}
         <div
           style={{
             display: 'flex',
             flexWrap: 'wrap',
             justifyContent: 'center',
-            gap: '1.5rem',
+            gap: '1rem',
           }}
         >
-          {sponsorList.map((sponsor) => (
+          {sponsors.map((sponsor) => (
             <SponsorItem
               key={sponsor.id}
               sponsor={sponsor}
