@@ -38,7 +38,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <HeroSection nextMatch={nextMatch} sponsors={sponsors} />
+      <HeroSection nextMatch={nextMatch} />
       <LatestMatchesSection fixtures={fixtures} />
       <StandingsSection standings={standings} />
       <FixturesSection fixtures={fixtures} />
