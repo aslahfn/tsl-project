@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Calendar, BarChart3 } from 'lucide-react';
 import { getCountdown } from '@/lib/utils';
 
@@ -13,6 +13,15 @@ interface NextMatch {
   time: string;
   homeTeam: { shortName: string };
   awayTeam: { shortName: string };
+}
+
+interface Sponsor {
+  id: string;
+  name: string;
+  logo: string;
+  url: string;
+  tier: string;
+  description?: string | null;
 }
 
 function CountdownUnit({ value, label }: { value: number; label: string }) {
@@ -30,8 +39,9 @@ function CountdownSeparator() {
   );
 }
 
-export default function HeroSection({ nextMatch }: { nextMatch: NextMatch | null }) {
+export default function HeroSection({ nextMatch, sponsors }: { nextMatch: NextMatch | null, sponsors?: Sponsor[] }) {
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [highlightIndex, setHighlightIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,6 +52,16 @@ export default function HeroSection({ nextMatch }: { nextMatch: NextMatch | null
     const id = setInterval(update, 1000);
     return () => clearInterval(id);
   }, [nextMatch]);
+
+  useEffect(() => {
+    if (!sponsors || sponsors.length === 0) return;
+    const interval = setInterval(() => {
+      setHighlightIndex((prev) => (prev + 1) % sponsors.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [sponsors]);
+
+  const highlightedSponsor = sponsors && sponsors.length > 0 ? sponsors[highlightIndex] : null;
 
   // Parallax on scroll
   useEffect(() => {
@@ -148,7 +168,34 @@ export default function HeroSection({ nextMatch }: { nextMatch: NextMatch | null
   }}
 />
       {/* Overlay */}
-      <div className="hero-gradient-overlay" style={{ position: 'absolute', inset: 0 }} />
+      <div className="hero-gradient-overlay" style={{ position: 'absolute', inset: 0, zIndex: 2 }} />
+
+      {/* Sponsor Highlight Behind Text */}
+      {highlightedSponsor && (
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3, pointerEvents: 'none' }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={highlightedSponsor.id}
+              initial={{ opacity: 0, scale: 0.8, filter: 'blur(10px)' }}
+              animate={{ opacity: 0.15, scale: 1, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
+              transition={{ duration: 1.5, ease: "easeInOut" }}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <img 
+                src={highlightedSponsor.logo || '/placeholder-sponsor.png'} 
+                alt={highlightedSponsor.name}
+                style={{ height: '30vh', maxWidth: '80vw', objectFit: 'contain', filter: 'grayscale(50%)' }} 
+              />
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      )}
        
 <motion.div
   initial={{
