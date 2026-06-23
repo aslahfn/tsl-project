@@ -335,7 +335,7 @@ export default function AdminDashboard() {
       setNewsForm({
         title: '', slug: '', excerpt: '', content: '',
         category: 'MATCH_REPORT', author: 'SLS Admin', coverImage: '',
-        featured: false, tags: '', manOfTheMatch: ''
+        featured: false, tags: '', manOfTheMatch: '', matchId: ''
       });
       fetchData();
     } catch (err: any) {
@@ -1614,7 +1614,7 @@ export default function AdminDashboard() {
                                 title: n.title, slug: n.slug, excerpt: n.excerpt || '',
                                 content: n.content || '', category: n.category || 'MATCH_REPORT',
                                 author: n.author || 'SLS Admin', coverImage: n.coverImage || '',
-                                featured: n.featured || false, tags: n.tags || '', manOfTheMatch: n.manOfTheMatch || ''
+                                featured: n.featured || false, tags: n.tags || '', manOfTheMatch: n.manOfTheMatch || '', matchId: ''
                               });
                             }}
                             style={{ background: 'none', border: 'none', color: '#FFD700', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
