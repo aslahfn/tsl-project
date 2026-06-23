@@ -304,7 +304,7 @@ export default function NewsPageClient({ articles }: { articles: NewsArticle[] }
                           <img 
                             src={article.coverImage} 
                             alt={article.title} 
-                            style={{ width: '100%', height: '100%', objectFit: 'contain', cursor: 'zoom-in' }} 
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'zoom-in' }} 
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();

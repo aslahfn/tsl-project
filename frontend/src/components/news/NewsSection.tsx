@@ -1,9 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight, Clock } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
+import ImagePreviewModal from '@/components/ui/ImagePreviewModal';
 import { useRealTime } from '@/hooks/useRealTime';
 
 interface NewsArticle {
@@ -47,6 +49,7 @@ export default function NewsSection({ articles }: { articles: NewsArticle[] }) {
   useRealTime();
   const featured = articles.find(a => a.featured);
   const others = articles.filter(a => !a.featured).slice(0, 4);
+  const [previewImage, setPreviewImage] = useState<{url: string, alt: string} | null>(null);
 
   return (
     <section className="section-padding" style={{ background: 'var(--bg-primary)' }} id="news">
@@ -77,14 +80,22 @@ export default function NewsSection({ articles }: { articles: NewsArticle[] }) {
               className="news-card"
             >
               <div style={{ textDecoration: 'none', display: 'block' }}>
-                <div style={{
-                  position: 'relative',
-                  height: 320,
-                  background: featured.coverImage ? `url(${featured.coverImage}) center/cover no-repeat` : cardGradients[0],
-                  borderRadius: 12,
-                  overflow: 'hidden',
-                  border: '1px solid var(--border-gold)',
-                }}>
+                <div 
+                  onClick={(e) => {
+                    if (featured.coverImage) {
+                      e.preventDefault();
+                      setPreviewImage({ url: featured.coverImage, alt: featured.title });
+                    }
+                  }}
+                  style={{
+                    position: 'relative',
+                    height: 320,
+                    background: featured.coverImage ? `url(${featured.coverImage}) center/cover no-repeat` : cardGradients[0],
+                    borderRadius: 12,
+                    overflow: 'hidden',
+                    border: '1px solid var(--border-gold)',
+                    cursor: featured.coverImage ? 'zoom-in' : 'default',
+                  }}>
                   <div style={{
                     position: 'absolute', inset: 0,
                     backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(212,175,55,0.04) 0%, transparent 50%)',
@@ -150,15 +161,23 @@ export default function NewsSection({ articles }: { articles: NewsArticle[] }) {
               className="news-card"
             >
               <div style={{ textDecoration: 'none', display: 'block' }}>
-                <div style={{
-                  height: 240,
-                  background: article.coverImage ? `url(${article.coverImage}) center/cover no-repeat` : cardGradients[(i + 1) % cardGradients.length],
-                  borderRadius: 12,
-                  overflow: 'hidden',
-                  border: '1px solid var(--border-gold)',
-                  position: 'relative',
-                  transition: 'all 0.3s ease',
-                }}>
+                <div 
+                  onClick={(e) => {
+                    if (article.coverImage) {
+                      e.preventDefault();
+                      setPreviewImage({ url: article.coverImage, alt: article.title });
+                    }
+                  }}
+                  style={{
+                    height: 240,
+                    background: article.coverImage ? `url(${article.coverImage}) center/cover no-repeat` : cardGradients[(i + 1) % cardGradients.length],
+                    borderRadius: 12,
+                    overflow: 'hidden',
+                    border: '1px solid var(--border-gold)',
+                    position: 'relative',
+                    transition: 'all 0.3s ease',
+                    cursor: article.coverImage ? 'zoom-in' : 'default',
+                  }}>
                   <div style={{
                     position: 'absolute', inset: 0,
                     backgroundImage: 'linear-gradient(rgba(255,255,255,0.01) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.01) 1px, transparent 1px)',
@@ -203,6 +222,12 @@ export default function NewsSection({ articles }: { articles: NewsArticle[] }) {
           ))}
         </div>
       </div>
+      <ImagePreviewModal
+        isOpen={!!previewImage}
+        onClose={() => setPreviewImage(null)}
+        imageUrl={previewImage?.url || ''}
+        altText={previewImage?.alt || ''}
+      />
     </section>
   );
 }
