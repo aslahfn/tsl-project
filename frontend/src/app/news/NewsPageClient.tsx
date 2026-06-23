@@ -290,7 +290,7 @@ export default function NewsPageClient({ articles }: { articles: NewsArticle[] }
                         }}
                       >
                         {article.coverImage ? (
-                          <img src={article.coverImage} alt={article.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <img src={article.coverImage} alt={article.title} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                         ) : (
                           <Newspaper size={36} color="rgba(255,255,255,0.05)" />
                         )}
