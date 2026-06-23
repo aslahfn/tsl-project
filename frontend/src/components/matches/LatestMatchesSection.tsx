@@ -282,23 +282,24 @@ function MatchCard({ match, isFeatured = false }: { match: Fixture, isFeatured?:
 import { useRealTime } from '@/hooks/useRealTime';
 
 export default function LatestMatchesSection({ fixtures }: { fixtures: Fixture[] }) {
-  // Get up to 3 most recent finished matches
-  const recentMatches = fixtures.filter(f => f.status === 'FINISHED').reverse().slice(0, 3);
-  
-  // Find upcoming matches
+  // Find finished and upcoming matches
+  const finishedFixtures = fixtures.filter(f => f.status === 'FINISHED').reverse();
   const upcomingFixtures = fixtures.filter(f => f.status === 'UPCOMING');
   
-  // The featured match is the first upcoming match
-  const featuredMatch = upcomingFixtures.length > 0 ? upcomingFixtures[0] : null;
+  // The featured matches: latest result and next preview
+  const featuredResult = finishedFixtures.length > 0 ? finishedFixtures[0] : null;
+  const featuredPreview = upcomingFixtures.length > 0 ? upcomingFixtures[0] : null;
   
-  // Other upcoming matches to fill the grid if we don't have enough recent matches
-  const otherUpcoming = upcomingFixtures.slice(1, Math.max(1, 4 - recentMatches.length));
+  // Other matches to fill the grid
+  const otherFinished = finishedFixtures.slice(1, 3); // Get up to 2 older finished matches
+  // Fill the rest with upcoming matches (if we need to show up to 4 total grid matches)
+  const otherUpcoming = upcomingFixtures.slice(1, Math.max(1, 5 - otherFinished.length));
   
-  const displayMatches = [...recentMatches, ...otherUpcoming];
+  const gridMatches = [...otherFinished, ...otherUpcoming];
 
   useRealTime();
 
-  if (displayMatches.length === 0) return null;
+  if (!featuredResult && !featuredPreview && gridMatches.length === 0) return null;
 
   return (
     <section className="section-padding" style={{ background: 'var(--bg-secondary)' }} id="latest-matches">
@@ -320,24 +321,37 @@ export default function LatestMatchesSection({ fixtures }: { fixtures: Fixture[]
           </Link>
         </motion.div>
 
-        {/* Featured Match */}
-        {featuredMatch && (
-          <div style={{ marginBottom: '2rem', maxWidth: '800px', margin: '0 auto 3rem auto' }}>
+        {/* Featured Matches */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', marginBottom: '3rem', maxWidth: '800px', margin: '0 auto 3rem auto' }}>
+          {featuredResult && (
             <motion.div
               initial={{ opacity: 0, y: 40, scale: 0.95 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, ease: "easeOut" }}
             >
-              <MatchCard match={featuredMatch} isFeatured={true} />
+              <h3 style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '1rem', textAlign: 'center' }}>Latest Result</h3>
+              <MatchCard match={featuredResult} isFeatured={true} />
             </motion.div>
-          </div>
-        )}
+          )}
 
-        {/* Grid */}
-        {displayMatches.length > 0 && (
+          {featuredPreview && (
+            <motion.div
+              initial={{ opacity: 0, y: 40, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: "easeOut", delay: featuredResult ? 0.2 : 0 }}
+            >
+              <h3 style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '1rem', textAlign: 'center' }}>Next Fixture</h3>
+              <MatchCard match={featuredPreview} isFeatured={true} />
+            </motion.div>
+          )}
+        </div>
+
+        {/* Grid for remaining matches */}
+        {gridMatches.length > 0 && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '1.25rem' }}>
-            {displayMatches.map((match, i) => (
+            {gridMatches.map((match, i) => (
               <motion.div
                 key={match.id}
                 initial={{ opacity: 0, y: 40 }}
