@@ -173,16 +173,31 @@ function UserLoginForm({ isGoogleEnabled }: { isGoogleEnabled: boolean }) {
           fontSize: '0.8rem',
           color: 'rgba(255,255,255,0.4)',
           borderTop: '1px solid rgba(255,255,255,0.08)',
-          paddingTop: '1.5rem'
+          paddingTop: '1.5rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.5rem'
         }}>
-          Are you a League Manager?{' '}
-          <Link href="/admin/login" style={{
-            color: '#FFD700',
-            textDecoration: 'none',
-            fontWeight: 700
-          }}>
-            Admin Console
-          </Link>
+          <div>
+            Are you a League Manager?{' '}
+            <Link href="/admin/login" style={{
+              color: '#FFD700',
+              textDecoration: 'none',
+              fontWeight: 700
+            }}>
+              Admin Console
+            </Link>
+          </div>
+          <div>
+            Are you a Team Manager?{' '}
+            <Link href="/manager/login" style={{
+              color: '#FFD700',
+              textDecoration: 'none',
+              fontWeight: 700
+            }}>
+              Manager Console
+            </Link>
+          </div>
         </div>
       </div>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>

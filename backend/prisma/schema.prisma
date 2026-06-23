@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,6 +12,8 @@ model User {
   email         String         @unique
   password      String
   role          String         @default("user")
+  teamId        String?
+  team          Team?          @relation("TeamManagers", fields: [teamId], references: [id])
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   refreshTokens RefreshToken[]
@@ -24,9 +23,9 @@ model RefreshToken {
   id        String   @id @default(cuid())
   token     String   @unique
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Team {
@@ -42,76 +41,92 @@ model Team {
   primaryColor   String
   secondaryColor String
   description    String
-  players        Player[]
-  homeFixtures   Fixture[] @relation("HomeTeam")
+  managerUsers   User[]    @relation("TeamManagers")
   awayFixtures   Fixture[] @relation("AwayTeam")
+  homeFixtures   Fixture[] @relation("HomeTeam")
+  players        Player[]
   standing       Standing?
 }
 
 model Player {
-  id              String   @id @default(cuid())
+  id              String       @id @default(cuid())
   name            String
   teamId          String
-  team            Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  position        String   // 'GK' | 'DEF' | 'MID' | 'FWD'
+  position        String
   number          Int
   nationality     String
-  nationalityFlag String   @default("🇮🇳")
+  nationalityFlag String       @default("🇮🇳")
   age             Int
   photo           String
-  goals           Int      @default(0)
-  assists         Int      @default(0)
-  matches         Int      @default(0)
-  yellowCards     Int      @default(0)
-  redCards        Int      @default(0)
-  cleanSheets     Int      @default(0)
-  rating          Float    @default(6.0)
+  goals           Int          @default(0)
+  assists         Int          @default(0)
+  matches         Int          @default(0)
+  yellowCards     Int          @default(0)
+  redCards        Int          @default(0)
+  cleanSheets     Int          @default(0)
+  rating          Float        @default(6.0)
+  Fixture         Fixture[]
+  MatchEvent      MatchEvent[]
+  team            Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }
 
 model Fixture {
-  id         String   @id @default(cuid())
-  homeTeamId String
-  homeTeam   Team     @relation("HomeTeam", fields: [homeTeamId], references: [id], onDelete: Cascade)
-  awayTeamId String
-  awayTeam   Team     @relation("AwayTeam", fields: [awayTeamId], references: [id], onDelete: Cascade)
-  date       String
-  time       String
-  venue      String
-  matchday   Int
-  status     String   // 'UPCOMING' | 'LIVE' | 'FINISHED'
-  homeScore  Int?
-  awayScore  Int?
+  id                      String       @id @default(cuid())
+  homeTeamId              String
+  awayTeamId              String
+  date                    String
+  time                    String
+  venue                   String
+  matchday                Int
+  status                  String
+  homeScore               Int?
+  awayScore               Int?
+  attendance              Int?         @default(0)
+  goalScorers             String?      @default("")
+  manOfTheMatchId         String?
+  matchReport             String?      @default("")
+  redCards                String?      @default("")
+  referee                 String?      @default("")
+  yellowCards             String?      @default("")
+  predictionWinnerContact String?
+  predictionWinnerName    String?
+  awayTeam                Team         @relation("AwayTeam", fields: [awayTeamId], references: [id], onDelete: Cascade)
+  homeTeam                Team         @relation("HomeTeam", fields: [homeTeamId], references: [id], onDelete: Cascade)
+  Player                  Player?      @relation(fields: [manOfTheMatchId], references: [id])
+  MatchEvent              MatchEvent[]
+  Prediction              Prediction[]
 }
 
 model Standing {
-  id             String   @id @default(cuid())
+  id             String @id @default(cuid())
   position       Int
-  teamId         String   @unique
-  team           Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  played         Int      @default(0)
-  won            Int      @default(0)
-  drawn          Int      @default(0)
-  lost           Int      @default(0)
-  goalsFor       Int      @default(0)
-  goalsAgainst   Int      @default(0)
-  goalDifference Int      @default(0)
-  points         Int      @default(0)
-  form           String   // e.g. "W,D,L"
-  positionChange String   // 'UP' | 'DOWN' | 'SAME'
+  teamId         String @unique
+  played         Int    @default(0)
+  won            Int    @default(0)
+  drawn          Int    @default(0)
+  lost           Int    @default(0)
+  goalsFor       Int    @default(0)
+  goalsAgainst   Int    @default(0)
+  goalDifference Int    @default(0)
+  points         Int    @default(0)
+  form           String
+  positionChange String
+  team           Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }
 
 model NewsArticle {
-  id          String   @id @default(cuid())
-  title       String
-  slug        String   @unique
-  excerpt     String
-  content     String
-  category    String   // 'MATCH_REPORT' | 'TRANSFER' | 'INJURY' | 'PREVIEW' | 'FEATURE'
-  author      String
-  coverImage  String
-  publishedAt DateTime @default(now())
-  featured    Boolean  @default(false)
-  tags        String   // comma-separated tags
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  excerpt       String
+  content       String
+  category      String
+  author        String
+  coverImage    String
+  publishedAt   DateTime @default(now())
+  featured      Boolean  @default(false)
+  tags          String
+  manOfTheMatch String?  @default("")
 }
 
 model GalleryImage {
@@ -119,7 +134,7 @@ model GalleryImage {
   url     String
   caption String
   matchId String?
-  tags    String  // comma-separated tags
+  tags    String
   width   Int     @default(1200)
   height  Int     @default(800)
 }
@@ -129,7 +144,7 @@ model Sponsor {
   name        String
   logo        String
   url         String
-  tier        String // 'TITLE' | 'GOLD' | 'SILVER'
+  tier        String
   description String?
 }
 
@@ -139,4 +154,33 @@ model Notification {
   message   String
   createdAt DateTime @default(now())
   read      Boolean  @default(false)
+}
+
+model MatchEvent {
+  id        String    @id
+  fixtureId String
+  playerId  String
+  type      EventType
+  minute    Int?
+  createdAt DateTime  @default(now())
+  Fixture   Fixture   @relation(fields: [fixtureId], references: [id], onDelete: Cascade)
+  Player    Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
+}
+
+model Prediction {
+  id              String   @id
+  fixtureId       String
+  voterName       String
+  voterContact    String
+  predictedResult String
+  createdAt       DateTime @default(now())
+  Fixture         Fixture  @relation(fields: [fixtureId], references: [id], onDelete: Cascade)
+
+  @@unique([fixtureId, voterContact])
+}
+
+enum EventType {
+  GOAL
+  YELLOW_CARD
+  RED_CARD
 }
