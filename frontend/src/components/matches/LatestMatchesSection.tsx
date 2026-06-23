@@ -107,20 +107,20 @@ function MatchCard({ match, isFeatured = false }: { match: Fixture, isFeatured?:
           <TeamLogo name={match.homeTeam.shortName} logo={match.homeTeam.logo} size={isFeatured ? 80 : 52} />
           <span style={{ fontSize: isFeatured ? '1.2rem' : '0.8rem', fontWeight: 600, textAlign: 'center', color: '#fff' }}>{match.homeTeam.shortName}</span>
           
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '0.2rem', gap: '0.2rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '0.4rem', gap: '0.3rem' }}>
             {hasSplitScorers && homeScorers && homeScorers.split(',').map((scorer, i) => (
-              <div key={`g-${i}`} style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: '0.2rem', textAlign: 'center' }}>
-                {scorer.trim()} <span style={{ fontSize: '0.55rem' }}>⚽</span>
+              <div key={`g-${i}`} style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', gap: '0.25rem', textAlign: 'center' }}>
+                {scorer.trim()} <span style={{ fontSize: '0.75rem' }}>⚽</span>
               </div>
             ))}
             {hasSplitYellows && homeYellows && homeYellows.split(',').map((player, i) => (
-              <div key={`y-${i}`} style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: '0.2rem', textAlign: 'center' }}>
-                {player.trim()} <span style={{ display: 'inline-block', width: '6px', height: '9px', background: 'var(--gold)', borderRadius: '1.5px' }} />
+              <div key={`y-${i}`} style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', gap: '0.25rem', textAlign: 'center' }}>
+                {player.trim()} <span style={{ display: 'inline-block', width: '8px', height: '12px', background: 'var(--gold)', borderRadius: '1.5px' }} />
               </div>
             ))}
             {hasSplitReds && homeReds && homeReds.split(',').map((player, i) => (
-              <div key={`r-${i}`} style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: '0.2rem', textAlign: 'center' }}>
-                {player.trim()} <span style={{ display: 'inline-block', width: '6px', height: '9px', background: '#FF3B3B', borderRadius: '1.5px' }} />
+              <div key={`r-${i}`} style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', gap: '0.25rem', textAlign: 'center' }}>
+                {player.trim()} <span style={{ display: 'inline-block', width: '8px', height: '12px', background: '#FF3B3B', borderRadius: '1.5px' }} />
               </div>
             ))}
           </div>
@@ -156,20 +156,20 @@ function MatchCard({ match, isFeatured = false }: { match: Fixture, isFeatured?:
           <TeamLogo name={match.awayTeam.shortName} logo={match.awayTeam.logo} size={isFeatured ? 80 : 52} />
           <span style={{ fontSize: isFeatured ? '1.2rem' : '0.8rem', fontWeight: 600, textAlign: 'center', color: '#fff' }}>{match.awayTeam.shortName}</span>
           
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '0.2rem', gap: '0.2rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '0.4rem', gap: '0.3rem' }}>
             {hasSplitScorers && awayScorers && awayScorers.split(',').map((scorer, i) => (
-              <div key={`g-${i}`} style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: '0.2rem', textAlign: 'center' }}>
-                <span style={{ fontSize: '0.55rem' }}>⚽</span> {scorer.trim()}
+              <div key={`g-${i}`} style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', gap: '0.25rem', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.75rem' }}>⚽</span> {scorer.trim()}
               </div>
             ))}
             {hasSplitYellows && awayYellows && awayYellows.split(',').map((player, i) => (
-              <div key={`y-${i}`} style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: '0.2rem', textAlign: 'center' }}>
-                <span style={{ display: 'inline-block', width: '6px', height: '9px', background: 'var(--gold)', borderRadius: '1.5px' }} /> {player.trim()}
+              <div key={`y-${i}`} style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', gap: '0.25rem', textAlign: 'center' }}>
+                <span style={{ display: 'inline-block', width: '8px', height: '12px', background: 'var(--gold)', borderRadius: '1.5px' }} /> {player.trim()}
               </div>
             ))}
             {hasSplitReds && awayReds && awayReds.split(',').map((player, i) => (
-              <div key={`r-${i}`} style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: '0.2rem', textAlign: 'center' }}>
-                <span style={{ display: 'inline-block', width: '6px', height: '9px', background: '#FF3B3B', borderRadius: '1.5px' }} /> {player.trim()}
+              <div key={`r-${i}`} style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', gap: '0.25rem', textAlign: 'center' }}>
+                <span style={{ display: 'inline-block', width: '8px', height: '12px', background: '#FF3B3B', borderRadius: '1.5px' }} /> {player.trim()}
               </div>
             ))}
           </div>
