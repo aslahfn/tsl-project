@@ -6,6 +6,7 @@ import { Calendar, Newspaper, Search, User } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import PageHeader from '@/components/ui/PageHeader';
 import Link from 'next/link';
+import ImagePreviewModal from '@/components/ui/ImagePreviewModal';
 import { useRealTime } from '@/hooks/useRealTime';
 
 interface NewsArticle {
@@ -42,6 +43,7 @@ export default function NewsPageClient({ articles }: { articles: NewsArticle[] }
   useRealTime();
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [previewImage, setPreviewImage] = useState<{url: string, alt: string} | null>(null);
 
   const filteredArticles = useMemo(() => {
     return articles.filter(article => {
@@ -118,7 +120,16 @@ export default function NewsPageClient({ articles }: { articles: NewsArticle[] }
                     }}
                   >
                     {featuredArticle.coverImage ? (
-                      <img src={featuredArticle.coverImage} alt={featuredArticle.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img 
+                        src={featuredArticle.coverImage} 
+                        alt={featuredArticle.title} 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'zoom-in' }} 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setPreviewImage({ url: featuredArticle.coverImage!, alt: featuredArticle.title });
+                        }}
+                      />
                     ) : (
                       <Newspaper size={64} color="rgba(255,255,255,0.08)" />
                     )}
@@ -290,7 +301,16 @@ export default function NewsPageClient({ articles }: { articles: NewsArticle[] }
                         }}
                       >
                         {article.coverImage ? (
-                          <img src={article.coverImage} alt={article.title} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                          <img 
+                            src={article.coverImage} 
+                            alt={article.title} 
+                            style={{ width: '100%', height: '100%', objectFit: 'contain', cursor: 'zoom-in' }} 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setPreviewImage({ url: article.coverImage!, alt: article.title });
+                            }}
+                          />
                         ) : (
                           <Newspaper size={36} color="rgba(255,255,255,0.05)" />
                         )}
@@ -368,6 +388,13 @@ export default function NewsPageClient({ articles }: { articles: NewsArticle[] }
           </div>
         )}
       </div>
+
+      <ImagePreviewModal
+        isOpen={!!previewImage}
+        onClose={() => setPreviewImage(null)}
+        imageUrl={previewImage?.url || ''}
+        altText={previewImage?.alt || ''}
+      />
     </div>
   );
 }

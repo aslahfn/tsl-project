@@ -1,7 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import ImagePreviewModal from '@/components/ui/ImagePreviewModal';
 import { ArrowLeft, Calendar, Tag, User } from 'lucide-react';
 import { NewsArticle } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
@@ -28,6 +30,7 @@ const categoryColors: Record<string, string> = {
 
 export default function ArticleDetailPageClient({ article }: ArticleDetailPageClientProps) {
   const accentColor = categoryColors[article.category] || '#00FF87';
+  const [previewImage, setPreviewImage] = useState<{url: string, alt: string} | null>(null);
 
   return (
     <div style={{ paddingTop: '8rem', minHeight: '100vh', background: 'var(--bg-primary)', paddingBottom: '5rem' }}>
@@ -145,7 +148,12 @@ export default function ArticleDetailPageClient({ article }: ArticleDetailPageCl
               overflow: 'hidden',
             }}>
               {article.coverImage ? (
-                <img src={article.coverImage} alt={article.title} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                <img 
+                  src={article.coverImage} 
+                  alt={article.title} 
+                  style={{ width: '100%', height: '100%', objectFit: 'contain', cursor: 'zoom-in' }} 
+                  onClick={() => setPreviewImage({ url: article.coverImage!, alt: article.title })}
+                />
               ) : (
                 <span className="font-display" style={{ fontSize: '1.5rem', color: 'rgba(255,255,255,0.08)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
                   League Visual Report
@@ -251,6 +259,13 @@ export default function ArticleDetailPageClient({ article }: ArticleDetailPageCl
           </div>
         </div>
       </div>
+
+      <ImagePreviewModal
+        isOpen={!!previewImage}
+        onClose={() => setPreviewImage(null)}
+        imageUrl={previewImage?.url || ''}
+        altText={previewImage?.alt || ''}
+      />
     </div>
   );
 }
