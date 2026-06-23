@@ -79,9 +79,12 @@ function MatchCard({ match }: { match: Fixture }) {
         </span>
         <span style={{
           padding: '0.2rem 0.6rem', borderRadius: '100px',
-          background: 'rgba(212,175,55,0.06)', border: '1px solid var(--border-gold)',
-          fontSize: '0.65rem', color: 'var(--gold)', letterSpacing: '0.1em',
-        }}>FULL TIME</span>
+          background: match.status === 'FINISHED' ? 'rgba(212,175,55,0.06)' : 'rgba(0,180,255,0.06)',
+          border: match.status === 'FINISHED' ? '1px solid var(--border-gold)' : '1px solid rgba(0,180,255,0.3)',
+          fontSize: '0.65rem', color: match.status === 'FINISHED' ? 'var(--gold)' : '#00b4ff', letterSpacing: '0.1em',
+        }}>
+          {match.status === 'FINISHED' ? 'FULL TIME' : 'UPCOMING PREVIEW'}
+        </span>
       </div>
 
       {/* Teams & Score */}
@@ -110,17 +113,29 @@ function MatchCard({ match }: { match: Fixture }) {
           </div>
         </div>
 
-        {/* Score */}
+        {/* Score or vs */}
         <div style={{ textAlign: 'center' }}>
-          <div className="font-display" style={{
-            fontSize: '2.5rem', letterSpacing: '0.05em', lineHeight: 1,
-            color: '#fff',
-          }}>
-            <span style={{ color: (match.homeScore ?? 0) > (match.awayScore ?? 0) ? 'var(--gold)' : '#fff' }}>{match.homeScore}</span>
-            <span style={{ color: 'rgba(255,255,255,0.3)', margin: '0 0.25rem' }}>-</span>
-            <span style={{ color: (match.awayScore ?? 0) > (match.homeScore ?? 0) ? 'var(--gold)' : '#fff' }}>{match.awayScore}</span>
-          </div>
+          {match.status === 'FINISHED' ? (
+            <div className="font-display" style={{
+              fontSize: '2.5rem', letterSpacing: '0.05em', lineHeight: 1,
+              color: '#fff',
+            }}>
+              <span style={{ color: (match.homeScore ?? 0) > (match.awayScore ?? 0) ? 'var(--gold)' : '#fff' }}>{match.homeScore}</span>
+              <span style={{ color: 'rgba(255,255,255,0.3)', margin: '0 0.25rem' }}>-</span>
+              <span style={{ color: (match.awayScore ?? 0) > (match.homeScore ?? 0) ? 'var(--gold)' : '#fff' }}>{match.awayScore}</span>
+            </div>
+          ) : (
+            <div className="font-display" style={{
+              fontSize: '2.5rem', letterSpacing: '0.05em', lineHeight: 1,
+              color: 'rgba(255,255,255,0.3)',
+            }}>
+              V S
+            </div>
+          )}
           <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>{formatDate(match.date)}</div>
+          {match.status === 'UPCOMING' && (
+            <div style={{ fontSize: '0.75rem', color: '#fff', marginTop: '0.2rem', fontWeight: 600 }}>{match.time.substring(0, 5)}</div>
+          )}
         </div>
 
         {/* Away */}
@@ -261,9 +276,17 @@ function MatchCard({ match }: { match: Fixture }) {
 import { useRealTime } from '@/hooks/useRealTime';
 
 export default function LatestMatchesSection({ fixtures }: { fixtures: Fixture[] }) {
-  const recentMatches = fixtures.filter(f => f.status === 'FINISHED');
+  // Get up to 3 most recent finished matches
+  const recentMatches = fixtures.filter(f => f.status === 'FINISHED').reverse().slice(0, 3);
+  
+  // If we have less than 4 matches total in this section, fill the rest with upcoming previews
+  const upcomingMatches = fixtures.filter(f => f.status === 'UPCOMING').slice(0, 4 - recentMatches.length);
+  
+  const displayMatches = [...recentMatches, ...upcomingMatches];
 
   useRealTime();
+
+  if (displayMatches.length === 0) return null;
 
   return (
     <section className="section-padding" style={{ background: 'var(--bg-secondary)' }} id="latest-matches">
@@ -277,8 +300,8 @@ export default function LatestMatchesSection({ fixtures }: { fixtures: Fixture[]
           style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}
         >
           <div>
-            <div className="section-badge">⚽ Latest Results</div>
-            <h2 className="section-title">Recent<br /><span className="gradient-text">Matches</span></h2>
+            <div className="section-badge">⚽ Match Center</div>
+            <h2 className="section-title">Results &amp;<br /><span className="gradient-text">Previews</span></h2>
           </div>
           <Link href="/fixtures" className="btn-secondary" style={{ gap: '0.5rem' }}>
             All Fixtures <ArrowRight size={14} />
@@ -287,7 +310,7 @@ export default function LatestMatchesSection({ fixtures }: { fixtures: Fixture[]
 
         {/* Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '1.25rem' }}>
-          {recentMatches.map((match, i) => (
+          {displayMatches.map((match, i) => (
             <motion.div
               key={match.id}
               initial={{ opacity: 0, y: 40 }}
