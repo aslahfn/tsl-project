@@ -1,5 +1,7 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+
 import Link from 'next/link';
 import { Trophy, Mail, MapPin, Phone } from 'lucide-react';
 
@@ -31,6 +33,31 @@ const FacebookIcon = ({ size = 15 }: { size?: number }) => (
 );
 
 export default function Footer() {
+  const [seasonStats, setSeasonStats] = useState({
+    matchday: '-',
+    topScorer: '-',
+    mostAssists: '-',
+    cleanSheets: '-',
+    leagueLeaders: '-',
+  });
+
+  useEffect(() => {
+    fetch('/api/stats/season')
+      .then(r => r.json())
+      .then(data => {
+        if (!data.error) {
+          setSeasonStats({
+            matchday: data.matchday || '-',
+            topScorer: data.topScorer || '-',
+            mostAssists: data.mostAssists || '-',
+            cleanSheets: data.cleanSheets || '-',
+            leagueLeaders: data.leagueLeaders || '-',
+          });
+        }
+      })
+      .catch(err => console.error('Error fetching season stats for footer:', err));
+  }, []);
+
   return (
     <footer style={{ background: '#030305', borderTop: '1px solid var(--border-gold)', paddingTop: '4rem' }}>
       <div className="container-wide">
@@ -100,11 +127,11 @@ export default function Footer() {
             <h4 className="font-display" style={{ fontSize: '1.1rem', letterSpacing: '0.1em', marginBottom: '1.25rem', color: '#fff' }}>Season 08</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {[
-                { label: 'Current Matchday', value: '10 of 15' },
-                { label: 'Top Scorer', value: 'Arjun Faize (14)' },
-                { label: 'Most Assists', value: 'Subijith Luca (10)' },
-                { label: 'Clean Sheets', value: 'Hasib GK (5)' },
-                { label: 'League Leaders', value: 'PETTIKADA FC' },
+                { label: 'Current Matchday', value: seasonStats.matchday },
+                { label: 'Top Scorer', value: seasonStats.topScorer },
+                { label: 'Most Assists', value: seasonStats.mostAssists },
+                { label: 'Clean Sheets', value: seasonStats.cleanSheets },
+                { label: 'League Leaders', value: seasonStats.leagueLeaders },
               ].map(item => (
                 <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem' }}>
                   <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{item.label}</span>
