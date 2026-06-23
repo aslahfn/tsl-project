@@ -65,8 +65,22 @@ function MatchCard({ match, isFeatured = false }: { match: Fixture, isFeatured?:
   const homeReds = hasSplitReds ? match.redCards!.split('|')[0].trim() : '';
   const awayReds = hasSplitReds ? match.redCards!.split('|')[1].trim() : '';
 
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    setMousePosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
   return (
     <motion.div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
       className={`match-card ${isFeatured ? 'featured' : ''}`}
       whileHover={{ y: -4, scale: 1.01 }}
       transition={{ type: 'spring', stiffness: 300 }}
@@ -78,6 +92,22 @@ function MatchCard({ match, isFeatured = false }: { match: Fixture, isFeatured?:
         boxShadow: isFeatured ? '0 10px 40px -10px rgba(0,180,255,0.1)' : 'none'
       }}
     >
+      {/* Interactive Mouse Glow / Spotlight */}
+      <div 
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: isHovering 
+            ? `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(212,175,55,0.06), transparent 40%)` 
+            : 'transparent',
+          pointerEvents: 'none',
+          transition: 'background 0.3s ease',
+          zIndex: 0
+        }}
+      />
+      
+      {/* Content wrapper to stay above the glow */}
+      <div style={{ position: 'relative', zIndex: 1 }}>
       {/* Matchday badge */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
         <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
@@ -282,11 +312,12 @@ function MatchCard({ match, isFeatured = false }: { match: Fixture, isFeatured?:
       <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center' }}>
         📍 {match.venue}
       </div>
+      </div>
     </motion.div>
   );
 }
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRealTime } from '@/hooks/useRealTime';
 import { AnimatePresence } from 'framer-motion';
 

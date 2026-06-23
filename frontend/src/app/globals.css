@@ -257,6 +257,22 @@ h1, h2, h3, h4 { line-height: 1.15; }
   transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
   text-decoration: none;
   box-shadow: inset 0 1px 0 rgba(212,175,55,0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-secondary::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  transform: skewX(-20deg);
+  transition: 0s;
+}
+
+.btn-secondary:hover::after {
+  left: 200%;
+  transition: 0.7s ease-in-out;
 }
 
 .btn-secondary:hover {
@@ -320,6 +336,23 @@ h1, h2, h3, h4 { line-height: 1.15; }
   box-shadow: var(--shadow-card);
   position: relative;
   overflow: hidden;
+}
+
+/* Glass Shimmer glare on hover */
+.match-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
+  transform: skewX(-20deg);
+  transition: 0s;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.match-card:hover::after {
+  left: 200%;
+  transition: 0.8s ease-in-out;
 }
 
 .match-card::before {

@@ -91,6 +91,16 @@ export default function GlobalBackground() {
           WebkitBackdropFilter: `blur(0px)`,
         }}
       />
+
+      {/* Cinematic Vignette */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          boxShadow: 'inset 0 0 150px rgba(0,0,0,0.8), inset 0 0 300px rgba(0,0,0,0.5)',
+          pointerEvents: 'none',
+        }}
+      />
     </div>
   );
 }
