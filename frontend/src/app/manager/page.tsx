@@ -4,6 +4,7 @@ import { verifyAdminJWT } from '@/lib/jwt';
 import { prisma } from '@/lib/prisma';
 import { Trophy, LogOut } from 'lucide-react';
 import { logoutManagerAction } from './actions';
+import ManagerDashboardClient from './ManagerDashboardClient';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,10 +21,21 @@ export default async function ManagerDashboard() {
     redirect('/manager/login');
   }
 
-  // Fetch the manager's team
+// Fetch the manager's team and players
   const user = await prisma.user.findUnique({
     where: { id: payload.id },
-    include: { team: true }
+    include: { 
+      team: {
+        include: {
+          players: {
+            orderBy: [
+              { position: 'desc' },
+              { number: 'asc' }
+            ]
+          }
+        }
+      } 
+    }
   });
 
   if (!user || !user.team) {
@@ -39,14 +51,19 @@ export default async function ManagerDashboard() {
       <div style={{ maxWidth: 1000, margin: '0 auto' }}>
         
         {/* Header Title */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1.5rem', marginBottom: '2rem', gap: '1rem' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1.5rem', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <div style={{
               width: 50, height: 50, borderRadius: '50%', background: 'rgba(255,215,0,0.1)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              border: `2px solid ${user.team.primaryColor}`
+              border: `2px solid ${user.team.primaryColor}`,
+              overflow: 'hidden'
             }}>
-              <Trophy size={24} color="#FFD700" />
+              {user.team.logo && user.team.logo !== '/logos/lfc.svg' ? (
+                <img src={user.team.logo} alt={user.team.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              ) : (
+                <Trophy size={24} color="#FFD700" />
+              )}
             </div>
             <div>
               <h1 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#FFD700', margin: 0 }}>
@@ -68,23 +85,8 @@ export default async function ManagerDashboard() {
           </form>
         </div>
 
-        {/* Dashboard Content */}
-        <div style={{
-          background: 'rgba(10, 10, 20, 0.7)',
-          border: '1px solid rgba(255, 255, 255, 0.05)',
-          borderRadius: '1rem',
-          padding: '2.5rem',
-          backdropFilter: 'blur(10px)',
-          textAlign: 'center'
-        }}>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#fff' }}>Welcome, {user.name}!</h2>
-          <p style={{ color: 'rgba(255,255,255,0.6)', lineHeight: '1.6', maxWidth: 600, margin: '0 auto' }}>
-            This is the Team Manager dashboard placeholder. 
-            Currently, you have been verified and assigned to <strong>{user.team.name}</strong>.
-            <br/><br/>
-            In the future, you will be able to edit your team's details, manage your players' stats, and update your squad directly from this page!
-          </p>
-        </div>
+        {/* Dashboard Client Component */}
+        <ManagerDashboardClient team={user.team} players={user.team.players} />
 
       </div>
     </div>

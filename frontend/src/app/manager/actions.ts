@@ -3,7 +3,10 @@
 import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { signAdminJWT } from '@/lib/jwt';
+import { signAdminJWT, verifyAdminJWT } from '@/lib/jwt';
+import { saveBase64Image } from '@/lib/upload';
+import { recalculatePlayerStats } from '@/lib/playerStats';
+import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 
 export async function registerManagerAction(formData: FormData) {
@@ -103,4 +106,158 @@ export async function logoutManagerAction() {
   const cookieStore = await cookies();
   cookieStore.delete('manager_token');
   redirect('/manager/login');
+}
+
+// Helper for manager auth check
+async function checkManagerAuth() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('manager_token')?.value;
+  if (!token) throw new Error('Not authenticated');
+  const payload = await verifyAdminJWT(token);
+  if (!payload || payload.role !== 'team_manager') {
+    throw new Error('Team Manager privileges required.');
+  }
+  
+  const user = await prisma.user.findUnique({
+    where: { id: payload.id },
+    select: { teamId: true }
+  });
+  
+  if (!user || !user.teamId) {
+    throw new Error('No team assigned to this manager.');
+  }
+  
+  return user.teamId;
+}
+
+// Unified error handler
+async function withErrorHandling<T>(action: () => Promise<T>) {
+  try {
+    const data = await action();
+    return { success: true, data, error: null };
+  } catch (err: any) {
+    console.error('Manager Action Error:', err);
+    return { success: false, data: null, error: err.message || 'An unexpected error occurred' };
+  }
+}
+
+export async function updateManagerTeam(formData: {
+  logo: string;
+  manager: string;
+  primaryColor: string;
+  secondaryColor: string;
+}) {
+  return withErrorHandling(async () => {
+    const teamId = await checkManagerAuth();
+    
+    let logoUrl = undefined;
+    if (formData.logo.startsWith('data:image')) {
+      const fileName = `team-logo-${Date.now()}.jpg`;
+      logoUrl = await saveBase64Image(formData.logo, fileName);
+    } else if (formData.logo !== '') {
+      logoUrl = formData.logo; // Keep existing
+    }
+    
+    const dataToUpdate: any = {
+      manager: formData.manager,
+      primaryColor: formData.primaryColor,
+      secondaryColor: formData.secondaryColor,
+    };
+    
+    if (logoUrl) {
+      dataToUpdate.logo = logoUrl;
+    }
+    
+    const team = await prisma.team.update({
+      where: { id: teamId },
+      data: dataToUpdate
+    });
+    
+    revalidatePath('/');
+    revalidatePath('/teams');
+    revalidatePath(`/teams/${team.slug}`);
+    revalidatePath('/manager');
+    return team;
+  });
+}
+
+export async function saveManagerPlayer(formData: {
+  id?: string;
+  name: string;
+  position: string;
+  number: number;
+  nationality: string;
+  age: number;
+  photo: string;
+}) {
+  return withErrorHandling(async () => {
+    const teamId = await checkManagerAuth();
+    
+    let photoUrl = undefined;
+    if (formData.photo.startsWith('data:image')) {
+      const fileName = `player-photo-${Date.now()}.jpg`;
+      photoUrl = await saveBase64Image(formData.photo, fileName);
+    } else if (formData.photo !== '') {
+      photoUrl = formData.photo;
+    }
+    
+    const data: any = {
+      name: formData.name,
+      teamId: teamId, // Lock to manager's team
+      position: formData.position,
+      number: Number(formData.number),
+      nationality: formData.nationality,
+      age: Number(formData.age),
+    };
+    
+    if (photoUrl) {
+      data.photo = photoUrl;
+    }
+    
+    let player;
+    if (formData.id) {
+      // Ensure the player being updated actually belongs to the manager's team
+      const existingPlayer = await prisma.player.findUnique({ where: { id: formData.id } });
+      if (!existingPlayer || existingPlayer.teamId !== teamId) {
+        throw new Error('Unauthorized to edit this player.');
+      }
+      
+      player = await prisma.player.update({
+        where: { id: formData.id },
+        data,
+      });
+    } else {
+      if (!data.photo) data.photo = '/players/default.jpg';
+      player = await prisma.player.create({
+        data,
+      });
+    }
+    
+    await recalculatePlayerStats();
+    revalidatePath('/players');
+    revalidatePath(`/players/${player.id}`);
+    revalidatePath(`/teams`);
+    revalidatePath('/manager');
+    return player;
+  });
+}
+
+export async function deleteManagerPlayer(id: string) {
+  return withErrorHandling(async () => {
+    const teamId = await checkManagerAuth();
+    
+    const existingPlayer = await prisma.player.findUnique({ where: { id } });
+    if (!existingPlayer || existingPlayer.teamId !== teamId) {
+      throw new Error('Unauthorized to delete this player.');
+    }
+    
+    const player = await prisma.player.delete({
+      where: { id },
+    });
+    
+    await recalculatePlayerStats();
+    revalidatePath('/players');
+    revalidatePath('/manager');
+    return player;
+  });
 }
