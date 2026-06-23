@@ -1,7 +1,6 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 interface Sponsor {
   id: string;
@@ -12,222 +11,178 @@ interface Sponsor {
   description?: string | null;
 }
 
-function SponsorItem({ sponsor }: { sponsor: Sponsor }) {
+function SponsorCard({ sponsor, size = 'medium' }: { sponsor: Sponsor, size?: 'large' | 'medium' | 'small' }) {
+  const dimensions = {
+    large: { width: '100%', maxWidth: '400px', height: '160px', logoHeight: '80px', fontSize: '1.5rem' },
+    medium: { width: '100%', maxWidth: '280px', height: '120px', logoHeight: '60px', fontSize: '1.2rem' },
+    small: { width: '100%', maxWidth: '200px', height: '90px', logoHeight: '45px', fontSize: '1rem' }
+  }[size];
+
   return (
     <a
       href={sponsor.url || "#"}
       target="_blank"
       rel="noopener noreferrer"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '1.25rem 1.5rem',
-        minWidth: '180px',
-        flexShrink: 0,
-        textDecoration: 'none',
-      }}
+      style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center' }}
     >
-      {/* Sponsor Logo Container */}
-      <div
+      <motion.div
+        whileHover={{ y: -5, scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
         style={{
-          width: '130px',
-          height: '70px',
+          width: dimensions.width,
+          maxWidth: dimensions.maxWidth,
+          height: dimensions.height,
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px solid rgba(255, 255, 255, 0.05)',
-          borderRadius: '8px',
-          padding: '10px',
-          transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          background: 'linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
+          border: size === 'large' ? '1px solid rgba(212,175,55,0.3)' : '1px solid rgba(255,255,255,0.05)',
+          borderRadius: '16px',
+          padding: '1.5rem',
+          boxShadow: size === 'large' ? '0 10px 30px rgba(212,175,55,0.05)' : 'none',
+          position: 'relative',
+          overflow: 'hidden'
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = 'var(--border-green-bright)';
-          e.currentTarget.style.background = 'rgba(212, 175, 55, 0.04)';
+          e.currentTarget.style.background = 'linear-gradient(145deg, rgba(212,175,55,0.08) 0%, rgba(255,255,255,0.02) 100%)';
+          e.currentTarget.style.borderColor = 'rgba(212,175,55,0.5)';
           const img = e.currentTarget.querySelector('img');
-          if (img) {
-            img.style.filter = 'grayscale(0%) opacity(1)';
-          }
+          if (img) img.style.filter = 'grayscale(0%) opacity(1)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)';
-          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)';
+          e.currentTarget.style.background = 'linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)';
+          e.currentTarget.style.borderColor = size === 'large' ? 'rgba(212,175,55,0.3)' : 'rgba(255,255,255,0.05)';
           const img = e.currentTarget.querySelector('img');
-          if (img) {
-            img.style.filter = 'grayscale(100%) opacity(0.5)';
-          }
+          if (img) img.style.filter = 'grayscale(100%) opacity(0.6)';
         }}
       >
         <img
           src={sponsor.logo || '/placeholder-sponsor.png'}
           alt={sponsor.name}
-          onError={(e) => {
-            (e.currentTarget as HTMLImageElement).src =
-              '/placeholder-sponsor.png';
-          }}
+          onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/placeholder-sponsor.png'; }}
           style={{
+            maxHeight: dimensions.logoHeight,
             maxWidth: '100%',
-            maxHeight: '100%',
             objectFit: 'contain',
-            filter: 'grayscale(100%) opacity(0.5)',
-            transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+            filter: 'grayscale(100%) opacity(0.6)',
+            transition: 'all 0.4s ease',
+            marginBottom: '0.75rem'
           }}
         />
-      </div>
-
-      {/* Sponsor Name */}
-      <div
-        style={{
+        <div style={{
           fontFamily: 'var(--font-bebas, Bebas Neue), sans-serif',
-          fontSize: '0.9rem',
-          color: 'var(--text-secondary)',
-          textAlign: 'center',
-          marginTop: '0.6rem',
+          fontSize: dimensions.fontSize,
+          color: size === 'large' ? 'var(--gold)' : 'var(--text-secondary)',
           letterSpacing: '0.05em',
-        }}
-      >
-        {sponsor.name}
-      </div>
-
-      {/* Sponsor Tier / Description */}
-      {sponsor.description && (
-        <div
-          style={{
-            marginTop: '6px',
-            padding: '2px 8px',
-            background: 'rgba(212, 175, 55, 0.06)',
-            border: '1px solid var(--border-gold)',
-            borderRadius: '100px',
-            color: 'var(--gold)',
-            fontSize: '0.6rem',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            textAlign: 'center',
-          }}
-        >
-          {sponsor.description}
+          textAlign: 'center',
+          transition: 'color 0.3s ease'
+        }}>
+          {sponsor.name}
         </div>
-      )}
+      </motion.div>
     </a>
   );
 }
 
-export default function SponsorsSection({
-  sponsors,
-}: {
-  sponsors: Sponsor[];
-}) {
-  const [highlightIndex, setHighlightIndex] = useState(0);
-
-  useEffect(() => {
-    if (!sponsors || sponsors.length === 0) return;
-    const interval = setInterval(() => {
-      setHighlightIndex((prev) => (prev + 1) % sponsors.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [sponsors]);
-
+export default function SponsorsSection({ sponsors }: { sponsors: Sponsor[] }) {
   if (!sponsors || sponsors.length === 0) return null;
 
-  const highlightedSponsor = sponsors[highlightIndex];
+  const titleSponsors = sponsors.filter(s => s.tier.toUpperCase().includes('TITLE'));
+  const goldSponsors = sponsors.filter(s => s.tier.toUpperCase().includes('GOLD'));
+  const otherSponsors = sponsors.filter(s => !s.tier.toUpperCase().includes('TITLE') && !s.tier.toUpperCase().includes('GOLD'));
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50 } }
+  };
 
   return (
     <section
       style={{
-        background: 'var(--bg-primary)',
-        borderTop: '1px solid var(--border-gold)',
-        borderBottom: '1px solid var(--border-gold)',
-        padding: '4rem 0',
+        background: 'linear-gradient(180deg, var(--bg-primary) 0%, rgba(10,10,15,1) 100%)',
+        borderTop: '1px solid rgba(212,175,55,0.2)',
+        borderBottom: '1px solid rgba(212,175,55,0.2)',
+        padding: '6rem 0',
+        position: 'relative',
+        overflow: 'hidden'
       }}
       id="sponsors"
     >
-      <div className="container-wide">
+      {/* Background Orbs */}
+      <div style={{ position: 'absolute', top: '-10%', left: '-5%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(212,175,55,0.03) 0%, transparent 70%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: '-10%', right: '-5%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(80,60,200,0.03) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+      <div className="container-wide" style={{ position: 'relative', zIndex: 10 }}>
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          style={{
-            textAlign: 'center',
-            marginBottom: '3rem',
-          }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          style={{ textAlign: 'center', marginBottom: '4rem' }}
         >
-          <div
-            className="section-badge"
-            style={{ margin: '0 auto' }}
-          >
-            🤝 Our Partners
-          </div>
+          <div className="section-badge" style={{ margin: '0 auto' }}>🤝 Official Partners</div>
+          <h2 className="section-title" style={{ marginTop: '1rem', fontSize: '3rem' }}>POWERED BY EXCELLENCE</h2>
+          <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '1rem auto 0' }}>
+            We are proud to be supported by brands that share our passion for the beautiful game and community development.
+          </p>
         </motion.div>
 
-        {/* Featured Highlighted Sponsor Transition */}
-        <div style={{ position: 'relative', height: 280, display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '2rem' }}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={highlightedSponsor.id}
-              initial={{ opacity: 0, scale: 0.9, filter: 'blur(5px)' }}
-              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, scale: 1.1, filter: 'blur(5px)' }}
-              transition={{ duration: 0.6, ease: "easeInOut" }}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                background: 'linear-gradient(135deg, rgba(212,175,55,0.1) 0%, rgba(10,10,20,0.8) 100%)',
-                border: '1px solid rgba(212,175,55,0.3)',
-                borderRadius: '1rem',
-                padding: '2.5rem 4rem',
-                boxShadow: '0 10px 40px -10px rgba(212,175,55,0.15)',
-                position: 'absolute'
-              }}
+        {titleSponsors.length > 0 && (
+          <div style={{ marginBottom: '4rem' }}>
+            <h3 style={{ textAlign: 'center', color: 'var(--gold)', fontSize: '1rem', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '2rem' }}>Title Sponsor</h3>
+            <motion.div 
+              variants={containerVariants} initial="hidden" whileInView="show" viewport={{ once: true }}
+              style={{ display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap' }}
             >
-              <div style={{ 
-                fontSize: '0.75rem', color: 'var(--gold)', textTransform: 'uppercase', 
-                letterSpacing: '0.2em', marginBottom: '1.5rem', fontWeight: 800,
-                display: 'flex', alignItems: 'center', gap: '0.5rem'
-              }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--gold)', boxShadow: '0 0 10px var(--gold)' }} />
-                Featured Sponsor
-              </div>
-              
-              <a href={highlightedSponsor.url || "#"} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <img 
-                  src={highlightedSponsor.logo || '/placeholder-sponsor.png'} 
-                  alt={highlightedSponsor.name}
-                  style={{ height: 90, maxWidth: 250, objectFit: 'contain', marginBottom: '1.5rem', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }} 
-                />
-                <div style={{ fontFamily: 'var(--font-bebas, Bebas Neue), sans-serif', fontSize: '1.8rem', color: '#fff', letterSpacing: '0.05em' }}>
-                  {highlightedSponsor.name}
-                </div>
-                {highlightedSponsor.description && (
-                  <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', marginTop: '0.5rem' }}>
-                    {highlightedSponsor.description}
-                  </div>
-                )}
-              </a>
+              {titleSponsors.map(sponsor => (
+                <motion.div key={sponsor.id} variants={itemVariants}>
+                  <SponsorCard sponsor={sponsor} size="large" />
+                </motion.div>
+              ))}
             </motion.div>
-          </AnimatePresence>
-        </div>
+          </div>
+        )}
 
-        {/* All Sponsors Grid */}
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            gap: '1rem',
-          }}
-        >
-          {sponsors.map((sponsor) => (
-            <SponsorItem
-              key={sponsor.id}
-              sponsor={sponsor}
-            />
-          ))}
-        </div>
+        {goldSponsors.length > 0 && (
+          <div style={{ marginBottom: '4rem' }}>
+            <h3 style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.85rem', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '1.5rem' }}>Gold Sponsors</h3>
+            <motion.div 
+              variants={containerVariants} initial="hidden" whileInView="show" viewport={{ once: true }}
+              style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap' }}
+            >
+              {goldSponsors.map(sponsor => (
+                <motion.div key={sponsor.id} variants={itemVariants}>
+                  <SponsorCard sponsor={sponsor} size="medium" />
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        )}
+
+        {otherSponsors.length > 0 && (
+          <div>
+            <h3 style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '1.5rem' }}>Official Partners</h3>
+            <motion.div 
+              variants={containerVariants} initial="hidden" whileInView="show" viewport={{ once: true }}
+              style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}
+            >
+              {otherSponsors.map(sponsor => (
+                <motion.div key={sponsor.id} variants={itemVariants}>
+                  <SponsorCard sponsor={sponsor} size="small" />
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        )}
       </div>
     </section>
   );
