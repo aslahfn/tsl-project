@@ -279,22 +279,36 @@ function MatchCard({ match, isFeatured = false }: { match: Fixture, isFeatured?:
   );
 }
 
+import { useState, useEffect } from 'react';
 import { useRealTime } from '@/hooks/useRealTime';
+import { AnimatePresence } from 'framer-motion';
 
 export default function LatestMatchesSection({ fixtures }: { fixtures: Fixture[] }) {
+  const [activeMatchId, setActiveMatchId] = useState<string | null>(null);
+
   // Get up to 3 most recent finished matches
   const recentMatches = fixtures.filter(f => f.status === 'FINISHED').reverse().slice(0, 3);
   
   // Find upcoming matches
   const upcomingFixtures = fixtures.filter(f => f.status === 'UPCOMING');
   
-  // The featured match is the first upcoming match
-  const featuredMatch = upcomingFixtures.length > 0 ? upcomingFixtures[0] : null;
-  
   // Other upcoming matches to fill the grid if we don't have enough recent matches
-  const otherUpcoming = upcomingFixtures.slice(1, Math.max(1, 4 - recentMatches.length));
+  const otherUpcoming = upcomingFixtures.slice(0, Math.max(1, 4 - recentMatches.length));
   
   const displayMatches = [...recentMatches, ...otherUpcoming];
+
+  // Set default active match to the first upcoming match, or first recent match
+  useEffect(() => {
+    if (!activeMatchId && fixtures.length > 0) {
+      if (upcomingFixtures.length > 0) {
+        setActiveMatchId(upcomingFixtures[0].id);
+      } else if (recentMatches.length > 0) {
+        setActiveMatchId(recentMatches[0].id);
+      }
+    }
+  }, [fixtures, activeMatchId, upcomingFixtures, recentMatches]);
+
+  const activeMatch = fixtures.find(f => f.id === activeMatchId) || null;
 
   useRealTime();
 
@@ -320,19 +334,22 @@ export default function LatestMatchesSection({ fixtures }: { fixtures: Fixture[]
           </Link>
         </motion.div>
 
-        {/* Featured Match */}
-        {featuredMatch && (
-          <div style={{ marginBottom: '2rem', maxWidth: '800px', margin: '0 auto 3rem auto' }}>
-            <motion.div
-              initial={{ opacity: 0, y: 40, scale: 0.95 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-            >
-              <MatchCard match={featuredMatch} isFeatured={true} />
-            </motion.div>
-          </div>
-        )}
+        {/* Dynamic Featured Premium Match */}
+        <div style={{ marginBottom: '2rem', maxWidth: '800px', margin: '0 auto 3rem auto', minHeight: '300px' }}>
+          <AnimatePresence mode="wait">
+            {activeMatch && (
+              <motion.div
+                key={activeMatch.id}
+                initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, y: -20, filter: 'blur(10px)' }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
+                <MatchCard match={activeMatch} isFeatured={true} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* Grid */}
         {displayMatches.length > 0 && (
@@ -344,6 +361,9 @@ export default function LatestMatchesSection({ fixtures }: { fixtures: Fixture[]
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
+                onMouseEnter={() => setActiveMatchId(match.id)}
+                onClick={() => setActiveMatchId(match.id)}
+                style={{ cursor: 'pointer', opacity: activeMatchId === match.id ? 0.5 : 1, transition: 'opacity 0.3s' }}
               >
                 <MatchCard match={match} />
               </motion.div>
