@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Trophy } from 'lucide-react';
+import { Menu, X, Trophy, ChevronDown } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import NotificationBell from './NotificationBell';
 
@@ -31,6 +31,8 @@ export default function Navbar() {
   }, []);
 
   const closeMenu = () => setMenuOpen(false);
+
+  const [signInDropdownOpen, setSignInDropdownOpen] = useState(false);
 
   return (
     <>
@@ -92,12 +94,50 @@ export default function Navbar() {
                   </div>
                 </Link>
               ) : (
-                <Link href="/login" style={{ padding: '0.5rem 1.25rem', fontSize: '0.75rem', border: '1px solid var(--border-green)', background: 'transparent', color: '#fff', borderRadius: '0.375rem', textDecoration: 'none', transition: 'all 0.2s', fontWeight: 600 }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-green)'; e.currentTarget.style.color = '#fff'; }}
-                >
-                  Sign In
-                </Link>
+                <div style={{ position: 'relative' }} onMouseLeave={() => setSignInDropdownOpen(false)}>
+                  <button 
+                    onClick={() => setSignInDropdownOpen(!signInDropdownOpen)}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 1rem', fontSize: '0.75rem', border: '1px solid var(--border-green)', background: 'transparent', color: '#fff', borderRadius: '0.375rem', cursor: 'pointer', transition: 'all 0.2s', fontWeight: 600 }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)'; }}
+                    onMouseLeave={e => { if (!signInDropdownOpen) { e.currentTarget.style.borderColor = 'var(--border-green)'; e.currentTarget.style.color = '#fff'; } }}
+                  >
+                    Sign In <ChevronDown size={14} />
+                  </button>
+
+                  <AnimatePresence>
+                    {signInDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={{ duration: 0.15 }}
+                        style={{
+                          position: 'absolute',
+                          top: '100%',
+                          right: 0,
+                          marginTop: '0.5rem',
+                          background: 'rgba(10, 10, 20, 0.95)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          borderRadius: '0.5rem',
+                          padding: '0.5rem',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          minWidth: '180px',
+                          zIndex: 50,
+                          backdropFilter: 'blur(10px)',
+                          boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5)',
+                        }}
+                      >
+                        <Link href="/login" onClick={() => setSignInDropdownOpen(false)} style={{ padding: '0.75rem 1rem', color: '#fff', textDecoration: 'none', fontSize: '0.8rem', fontWeight: 600, borderRadius: '0.3rem', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                          User / Google Login
+                        </Link>
+                        <Link href="/manager/login" onClick={() => setSignInDropdownOpen(false)} style={{ padding: '0.75rem 1rem', color: 'var(--gold)', textDecoration: 'none', fontSize: '0.8rem', fontWeight: 600, borderRadius: '0.3rem', transition: 'background 0.2s', marginTop: '0.2rem' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,215,0,0.1)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                          Team Manager Login
+                        </Link>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               )}
               <Link href="/admin" className="btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.75rem' }} aria-label="Admin Panel">
                 Admin
