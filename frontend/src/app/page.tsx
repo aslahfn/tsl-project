@@ -4,6 +4,7 @@ import HeroSection from '@/components/hero/HeroSection';
 
 export const dynamic = 'force-dynamic';
 import LatestMatchesSection from '@/components/matches/LatestMatchesSection';
+import LiveMatchTicker from '@/components/matches/LiveMatchTicker';
 import StandingsSection from '@/components/standings/StandingsSection';
 import FixturesSection from '@/components/fixtures/FixturesSection';
 import TeamsSection from '@/components/teams/TeamsSection';
@@ -38,6 +39,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <LiveMatchTicker fixtures={fixtures} />
       <HeroSection nextMatch={nextMatch} />
       <LatestMatchesSection fixtures={fixtures} />
       <StandingsSection standings={standings} />
