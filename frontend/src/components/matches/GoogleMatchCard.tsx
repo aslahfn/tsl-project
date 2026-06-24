@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { MoreVertical, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface TeamProps {
   name: string;
@@ -33,7 +34,11 @@ export default function GoogleMatchCard({
   onOptions,
 }: GoogleMatchCardProps) {
   return (
-    <div className="google-match-card">
+    <motion.div 
+      className="google-match-card card-holographic"
+      whileHover={{ y: -6, rotateX: 3, rotateY: -3, scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 300 }}
+    >
       <style>{`
         .google-match-card {
           background-color: #1f2023; /* Darker grey to match image background closely */
@@ -255,6 +260,6 @@ export default function GoogleMatchCard({
           {awayTeam.rank && <div className="gmc-team-rank">{awayTeam.rank}</div>}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

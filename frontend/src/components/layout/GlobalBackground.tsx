@@ -92,6 +92,12 @@ export default function GlobalBackground() {
         }}
       />
 
+      {/* Hexagonal Net overlay */}
+      <div className="bg-net-pattern" style={{ position: 'absolute', inset: 0, opacity: 0.6 }} />
+
+      {/* Abstract Pitch Lines */}
+      <div className="bg-pitch-lines" style={{ opacity: 0.5 }} />
+
       {/* Cinematic Vignette */}
       <div
         style={{

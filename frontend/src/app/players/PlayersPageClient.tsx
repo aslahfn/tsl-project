@@ -308,11 +308,12 @@ export default function PlayersPageClient({ players, teams }: { players: Player[
                 <motion.div
                   key={player.id}
                   layout
+                  className="card-holographic"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.3, delay: Math.min(idx * 0.03, 0.3) }}
-                  whileHover={{ y: -6 }}
+                  whileHover={{ y: -8, rotateX: 5, rotateY: -5, scale: 1.02 }}
                   style={{
                     background: 'rgba(255,255,255,0.02)',
                     border: '1px solid rgba(255,255,255,0.05)',

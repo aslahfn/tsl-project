@@ -148,7 +148,7 @@ export default function LiveMatchTicker({ fixtures }: { fixtures: Fixture[] }) {
                 WebkitBackdropFilter: 'blur(20px)',
                 border: worldMatch.isLive ? '1px solid rgba(255, 59, 59, 0.4)' : '1px solid rgba(0, 180, 255, 0.3)',
                 borderRadius: '100px',
-                boxShadow: worldMatch.isLive ? '0 10px 30px rgba(255, 59, 59, 0.2)' : '0 10px 30px rgba(0, 0, 0, 0.5)',
+                boxShadow: worldMatch.isLive ? '0 0 25px rgba(255, 59, 59, 0.5), inset 0 0 12px rgba(255, 59, 59, 0.2)' : '0 10px 30px rgba(0, 0, 0, 0.5)',
               }}
             >
               <div style={{
@@ -205,7 +205,7 @@ export default function LiveMatchTicker({ fixtures }: { fixtures: Fixture[] }) {
                   WebkitBackdropFilter: 'blur(20px)',
                   border: isLive ? '1px solid rgba(255, 59, 59, 0.4)' : '1px solid rgba(0, 180, 255, 0.3)',
                   borderRadius: '100px',
-                  boxShadow: isLive ? '0 10px 30px rgba(255, 59, 59, 0.2)' : '0 10px 30px rgba(0, 0, 0, 0.5)',
+                  boxShadow: isLive ? '0 0 25px rgba(255, 59, 59, 0.5), inset 0 0 12px rgba(255, 59, 59, 0.2)' : '0 10px 30px rgba(0, 0, 0, 0.5)',
                 }}
               >
                 <div style={{

@@ -999,3 +999,65 @@ h1, h2, h3, h4 { line-height: 1.15; }
     transform: none;
   }
 }
+
+/* =============================================
+   HOLOGRAPHIC CARD EFFECT
+   ============================================= */
+.card-holographic {
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  border: 1px solid var(--border-gold);
+}
+
+.card-holographic::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.2) 25%,
+    rgba(212, 175, 55, 0.4) 45%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 55%
+  );
+  mix-blend-mode: color-dodge;
+  background-size: 200% 200%;
+  background-position: 100% 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease, background-position 0.1s ease;
+  pointer-events: none;
+}
+
+.card-holographic:hover {
+  box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 30px rgba(212,175,55,0.3);
+}
+
+.card-holographic:hover::before {
+  opacity: 1;
+}
+
+/* =============================================
+   FOOTBALL PITCH & NET PATTERNS
+   ============================================= */
+.bg-net-pattern {
+  background-image: 
+    linear-gradient(30deg, rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(-30deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 40px 69px;
+}
+
+.bg-pitch-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    /* Center line */
+    linear-gradient(to bottom, transparent 49.5%, rgba(212,175,55,0.08) 49.5%, rgba(212,175,55,0.08) 50.5%, transparent 50.5%),
+    /* Center circle */
+    radial-gradient(circle at 50% 50%, transparent 15%, rgba(212,175,55,0.08) 15%, rgba(212,175,55,0.08) 16%, transparent 16%);
+  background-size: 100% 100%;
+}

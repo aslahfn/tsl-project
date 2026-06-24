@@ -30,6 +30,40 @@ function CountdownSeparator() {
   );
 }
 
+function FloatingFootballs() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+
+  const particles = Array.from({ length: 8 });
+  return (
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 1 }}>
+      {particles.map((_, i) => {
+        const size = Math.random() * 20 + 10;
+        return (
+          <div
+            key={i}
+            className="particle"
+            style={{
+              left: `${Math.random() * 100}%`,
+              bottom: '-50px',
+              width: size,
+              height: size,
+              background: 'transparent',
+              fontSize: `${size}px`,
+              animationDuration: `${Math.random() * 10 + 15}s`,
+              animationDelay: `${Math.random() * 5}s`,
+              opacity: 0.3,
+            }}
+          >
+            ⚽
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function HeroSection({ nextMatch }: { nextMatch: NextMatch | null }) {
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
@@ -134,6 +168,8 @@ export default function HeroSection({ nextMatch }: { nextMatch: NextMatch | null
         <div style={{ position: 'absolute', top: '-10%', left: '10%', width: '30vw', height: '30vw', background: 'radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%)', filter: 'blur(50px)' }} />
         <div style={{ position: 'absolute', top: '-10%', right: '10%', width: '30vw', height: '30vw', background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)', filter: 'blur(50px)' }} />
       </div>
+
+      <FloatingFootballs />
 
 <motion.img
   src="/league-logo.png"
