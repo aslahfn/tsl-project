@@ -16,6 +16,7 @@ const navLinks = [
   { href: '/players', label: 'Players' },
   { href: '/gallery', label: 'Gallery' },
   { href: '/news', label: 'News' },
+  { href: '/live', label: 'Live' },
 ];
 
 export default function Navbar() {
