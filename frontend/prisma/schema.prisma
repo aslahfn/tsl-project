@@ -99,6 +99,7 @@ model Fixture {
   manOfTheMatchId String?
   manOfTheMatch   Player? @relation("MOTM", fields: [manOfTheMatchId], references: [id])
   matchReport   String? @default("")
+  streamUrl     String? @default("")
   attendance    Int?    @default(0)
   referee       String? @default("")
 

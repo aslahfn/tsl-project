@@ -107,7 +107,7 @@ export default function AdminDashboard() {
     homeTeamId: '', awayTeamId: '', date: '', time: '',
     venue: '', matchday: 1, status: 'UPCOMING', homeScore: 0, awayScore: 0,
     goalScorers: '', yellowCards: '', redCards: '', manOfTheMatchId: '',
-    matchReport: '', referee: '', attendance: 0
+    matchReport: '', referee: '', attendance: 0, streamUrl: ''
   });
 
   const [editNewsId, setEditNewsId] = useState<string | null>(null);
@@ -161,6 +161,7 @@ export default function AdminDashboard() {
   const [liveAttendance, setLiveAttendance] = useState(0);
   const [liveReport, setLiveReport] = useState('');
   const [liveGoalText, setLiveGoalText] = useState('');
+  const [liveStreamUrl, setLiveStreamUrl] = useState('');
 
   // Redirect handled in checkSession useEffect
 
@@ -193,6 +194,7 @@ export default function AdminDashboard() {
           setLiveReferee(liveMatch.referee || '');
           setLiveAttendance(liveMatch.attendance ?? 0);
           setLiveReport(liveMatch.matchReport || '');
+          setLiveStreamUrl(liveMatch.streamUrl || '');
         }
       }
     } catch (err) {
@@ -309,7 +311,7 @@ export default function AdminDashboard() {
         homeTeamId: teams[0]?.id || '', awayTeamId: teams[1]?.id || '', date: '', time: '',
         venue: '', matchday: 1, status: 'UPCOMING', homeScore: 0, awayScore: 0,
         goalScorers: '', yellowCards: '', redCards: '', manOfTheMatchId: '',
-        matchReport: '', referee: '', attendance: 0
+        matchReport: '', referee: '', attendance: 0, streamUrl: ''
       });
       fetchData();
     } catch (err: any) {
@@ -460,6 +462,7 @@ export default function AdminDashboard() {
         referee: liveReferee,
         attendance: liveAttendance,
         matchReport: liveReport,
+        streamUrl: liveStreamUrl,
         eventText: text
       });
       showFeedback('Live score & events updated successfully!');
@@ -487,6 +490,7 @@ export default function AdminDashboard() {
         referee: fid === liveFixtureId ? liveReferee : match.referee,
         attendance: fid === liveFixtureId ? liveAttendance : match.attendance,
         matchReport: fid === liveFixtureId ? liveReport : match.matchReport,
+        streamUrl: fid === liveFixtureId ? liveStreamUrl : match.streamUrl,
       });
       showFeedback('Match marked as Full Time! Standings and Player Stats recalculated.');
       fetchData();
@@ -738,6 +742,7 @@ export default function AdminDashboard() {
                               setLiveReferee(m.referee || '');
                               setLiveAttendance(m.attendance ?? 0);
                               setLiveReport(m.matchReport || '');
+                              setLiveStreamUrl(m.streamUrl || '');
                             }
                           }}
                           style={inputStyle}
@@ -769,7 +774,10 @@ export default function AdminDashboard() {
                           </div>
 
                           <div style={{ display: 'flex', gap: '1rem' }}>
-
+                            <div style={{ flex: 1 }}>
+                              <label style={labelStyle}>Live Stream URL (YouTube)</label>
+                              <input type="text" placeholder="https://youtube.com/watch?v=..." value={liveStreamUrl} onChange={e => setLiveStreamUrl(e.target.value)} style={inputStyle} />
+                            </div>
                           </div>
 
                           <div style={{ display: 'flex', gap: '1rem' }}>
@@ -1374,7 +1382,7 @@ export default function AdminDashboard() {
                       {editFixtureId && (
                         <button type="button" onClick={() => {
                           setEditFixtureId(null);
-                          setFixtureForm({ homeTeamId: teams[0]?.id || '', awayTeamId: teams[1]?.id || '', date: '', time: '', venue: '', matchday: 1, status: 'UPCOMING', homeScore: 0, awayScore: 0, goalScorers: '', yellowCards: '', redCards: '', manOfTheMatchId: '', matchReport: '', referee: '', attendance: 0 });
+                          setFixtureForm({ homeTeamId: teams[0]?.id || '', awayTeamId: teams[1]?.id || '', date: '', time: '', venue: '', matchday: 1, status: 'UPCOMING', homeScore: 0, awayScore: 0, goalScorers: '', yellowCards: '', redCards: '', manOfTheMatchId: '', matchReport: '', referee: '', attendance: 0, streamUrl: '' });
                         }} style={{ background: 'rgba(255,255,255,0.08)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '0.4rem', padding: '0.75rem', cursor: 'pointer' }}>
                           Cancel
                         </button>
@@ -1445,7 +1453,7 @@ export default function AdminDashboard() {
                                 goalScorers: f.goalScorers || '', yellowCards: f.yellowCards || '',
                                 redCards: f.redCards || '', manOfTheMatchId: f.manOfTheMatchId || '',
                                 matchReport: f.matchReport || '', referee: f.referee || '',
-                                attendance: f.attendance ?? 0
+                                attendance: f.attendance ?? 0, streamUrl: (f as any).streamUrl || ''
                               });
                             }}
                             style={{ background: 'none', border: 'none', color: '#FFD700', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}

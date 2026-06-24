@@ -85,6 +85,7 @@ model Fixture {
   goalScorers             String?      @default("")
   manOfTheMatchId         String?
   matchReport             String?      @default("")
+  streamUrl               String?      @default("")
   redCards                String?      @default("")
   referee                 String?      @default("")
   yellowCards             String?      @default("")

@@ -48,8 +48,21 @@ interface Fixture {
   matchReport?: string | null;
   attendance?: number | null;
   referee?: string | null;
+  streamUrl?: string | null;
 
   events?: MatchEvent[];
+}
+
+function getEmbedUrl(url: string) {
+  if (!url) return '';
+  let videoId = '';
+  if (url.includes('youtube.com/watch?v=')) {
+    videoId = url.split('v=')[1].split('&')[0];
+  } else if (url.includes('youtu.be/')) {
+    videoId = url.split('youtu.be/')[1].split('?')[0];
+  }
+  if (videoId) return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
+  return url;
 }
 
 function MatchCard({ match, isFeatured = false }: { match: Fixture, isFeatured?: boolean }) {
@@ -400,7 +413,18 @@ export default function LatestMatchesSection({ fixtures }: { fixtures: Fixture[]
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 exit={{ opacity: 0, y: -20, filter: 'blur(10px)' }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
+                style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
               >
+                {activeMatch.status === 'LIVE' && activeMatch.streamUrl && (
+                  <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', borderRadius: '1rem', overflow: 'hidden', border: '1px solid rgba(255,59,59,0.5)', boxShadow: '0 10px 40px rgba(255,59,59,0.2)' }}>
+                    <iframe
+                      src={getEmbedUrl(activeMatch.streamUrl)}
+                      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
+                  </div>
+                )}
                 <MatchCard match={activeMatch} isFeatured={true} />
               </motion.div>
             )}
