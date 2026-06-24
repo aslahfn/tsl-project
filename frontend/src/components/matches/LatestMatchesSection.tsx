@@ -65,6 +65,31 @@ function getEmbedUrl(url: string) {
   return url;
 }
 
+function StreamPlayer({ url }: { url: string }) {
+  if (!url) return null;
+  const embedUrl = getEmbedUrl(url);
+  const isMjpeg = url.endsWith('/video') || url.endsWith('.mjpg') || url.endsWith('/stream');
+
+  if (isMjpeg) {
+    return (
+      <img 
+        src={embedUrl} 
+        alt="Live Stream" 
+        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000' }} 
+      />
+    );
+  }
+
+  return (
+    <iframe
+      src={embedUrl}
+      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+    ></iframe>
+  );
+}
+
 function MatchCard({ match, isFeatured = false }: { match: Fixture, isFeatured?: boolean }) {
   const hasSplitScorers = match.goalScorers && match.goalScorers.includes('|');
   const homeScorers = hasSplitScorers ? match.goalScorers!.split('|')[0].trim() : '';
@@ -417,12 +442,7 @@ export default function LatestMatchesSection({ fixtures }: { fixtures: Fixture[]
               >
                 {activeMatch.status === 'LIVE' && activeMatch.streamUrl && (
                   <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', borderRadius: '1rem', overflow: 'hidden', border: '1px solid rgba(255,59,59,0.5)', boxShadow: '0 10px 40px rgba(255,59,59,0.2)' }}>
-                    <iframe
-                      src={getEmbedUrl(activeMatch.streamUrl)}
-                      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
+                    <StreamPlayer url={activeMatch.streamUrl} />
                   </div>
                 )}
                 <MatchCard match={activeMatch} isFeatured={true} />

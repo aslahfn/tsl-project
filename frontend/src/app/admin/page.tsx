@@ -775,8 +775,8 @@ export default function AdminDashboard() {
 
                           <div style={{ display: 'flex', gap: '1rem' }}>
                             <div style={{ flex: 1 }}>
-                              <label style={labelStyle}>Live Stream URL (YouTube)</label>
-                              <input type="text" placeholder="https://youtube.com/watch?v=..." value={liveStreamUrl} onChange={e => setLiveStreamUrl(e.target.value)} style={inputStyle} />
+                              <label style={labelStyle}>Stream URL or IP Camera</label>
+                              <input type="text" placeholder="https://youtube.com/... or http://192.168.1.5:8080/video" value={liveStreamUrl} onChange={e => setLiveStreamUrl(e.target.value)} style={inputStyle} />
                             </div>
                           </div>
 
