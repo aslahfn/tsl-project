@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
-import LivePageClient from './LivePageClient';
+import LivePageClient from './LivePageClient'; // Client component for live stream
 
 export const dynamic = 'force-dynamic';
 
