@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { formatDate } from '@/lib/utils';
+import { formatDate, formatTime } from '@/lib/utils';
 import { useRealTime } from '@/hooks/useRealTime';
 import Link from 'next/link';
 
@@ -236,7 +236,7 @@ export default function LiveMatchTicker({ fixtures }: { fixtures: Fixture[] }) {
                   <>
                     <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.1)' }} />
                     <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>
-                      {formatDate(activeMatch.date)} • {activeMatch.time.substring(0, 5)}
+                      {formatDate(activeMatch.date)} • {formatTime(activeMatch.time)}
                     </div>
                   </>
                 )}

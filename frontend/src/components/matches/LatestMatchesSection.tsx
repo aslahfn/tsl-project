@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { formatDate } from '@/lib/utils';
+import { formatDate, formatTime } from '@/lib/utils';
 import TeamLogo from '@/components/ui/TeamLogo';
 
 interface Team {
@@ -215,7 +215,7 @@ function MatchCard({ match, isFeatured = false }: { match: Fixture, isFeatured?:
           )}
           <div style={{ fontSize: isFeatured ? '0.8rem' : '0.65rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>{formatDate(match.date)}</div>
           {match.status === 'UPCOMING' && (
-            <div style={{ fontSize: isFeatured ? '1rem' : '0.75rem', color: '#fff', marginTop: '0.2rem', fontWeight: 600 }}>{match.time.substring(0, 5)}</div>
+            <div style={{ fontSize: isFeatured ? '1rem' : '0.75rem', color: '#fff', marginTop: '0.2rem', fontWeight: 600 }}>{formatTime(match.time)}</div>
           )}
         </div>
 
